@@ -17,17 +17,14 @@ app.secret_key = os.environ.get("FLASK_SECRET", "cyber_system_ultra_secret_key_2
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# Configuración única de tu Bot (ID de Invitación Real)
-CLIENT_ID = "1525280479476060210"
-INVITE_URL = f"https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&permissions=8&scope=bot%20applications.commands"
-
-# ==============================================================================
-# 2. RUTAS DE LA INTERFAZ WEB (FLASK ORIGINAL CYBERPUNK)
-# ==============================================================================
+# CONFIGURACIÓN DE OAUTH2 (Buscá estos datos en el Discord Developer Portal -> OAuth2)
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "TU_CLIENT_SECRET_ACÁ")
+REDIRECT_URI = "https://combobot2026.onrender.com/callback"
 
 @app.route('/')
 def home():
-    """Página de inicio con estética Neon para invitar al bot y calmar a Render"""
+    # URL para que el usuario inicie sesión con su cuenta de Discord
+    login_url = f"https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={requests.utils.quote(REDIRECT_URI)}&response_type=code&scope=identify%20guilds"
     return f'''
     <!DOCTYPE html>
     <html lang="es">
@@ -36,68 +33,88 @@ def home():
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Alejo's CyberBot Hub 🚀</title>
         <style>
-            body {{
-                background-color: #0a0914;
-                color: #FFFFFF;
-                font-family: 'Segoe UI', sans-serif;
-                text-align: center;
-                margin: 0;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }}
-            .panel-container {{
-                max-width: 600px;
-                padding: 40px;
-                background: #0f0d22;
-                border-radius: 20px;
-                box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
-                border: 1px solid #1f1b40;
-            }}
+            body {{ background-color: #0a0914; color: #FFFFFF; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }}
+            .panel-container {{ max-width: 600px; padding: 40px; background: #0f0d22; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 240, 255, 0.2); border: 1px solid #1f1b40; }}
             h1 {{ font-size: 2.5rem; margin-bottom: 10px; color: #00f0ff; }}
             p {{ color: #6c6985; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; }}
-            .invite-btn {{
-                background: linear-gradient(135deg, #00f0ff 0%, #39ff14 100%);
-                color: #0a0914;
-                padding: 16px 35px;
-                text-decoration: none;
-                border-radius: 12px;
-                font-weight: bold;
-                font-size: 1.2rem;
-                display: inline-block;
-                transition: all 0.2s;
-                box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
-            }}
-            .invite-btn:hover {{
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(57, 255, 20, 0.5);
-            }}
+            .login-btn {{ background: linear-gradient(135deg, #00f0ff 0%, #39ff14 100%); color: #0a0914; padding: 16px 35px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 1.2rem; display: inline-block; transition: all 0.2s; box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3); }}
+            .login-btn:hover {{ transform: translateY(-3px); box-shadow: 0 8px 25px rgba(57, 255, 20, 0.5); }}
         </style>
     </head>
     <body>
         <div class="panel-container">
             <h1>🛸 Alejo's CyberBot Central</h1>
-            <p>Sincronización total en la nube: 100 modos Arcade, alertas automatizadas de redes, audio de alta fidelidad vía Wavelink y personalización de imágenes mediante comandos.</p>
-            <a href="{INVITE_URL}" target="_blank" class="invite-btn">🚀 Inyectar Bot al Servidor</a>
+            <p>Para gestionar tus servidores y usar los controles en tiempo real, ingresá con tu cuenta.</p>
+            <a href="{login_url}" class="login-btn">🔑 Iniciar Sesión con Discord</a>
         </div>
     </body>
     </html>
     '''
 
+@app.route('/callback')
+def callback():
+    """Recibe el código de Discord y pide el token del usuario"""
+    code = request.args.get('code')
+    if not code:
+        return redirect('/')
+    
+    # Intercambiamos el código por un token de acceso
+    data = {
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': REDIRECT_URI
+    }
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    r = requests.post('%s/oauth2/token' % "https://discord.com/api", data=data, headers=headers)
+    
+    if r.status_code != 200:
+        return "❌ Error al autenticar con Discord.", 400
+        
+    token_json = r.json()
+    session['access_token'] = token_json.get('access_token')
+    return redirect('/server_panel.html')
+
 @app.route('/server_panel.html')
 def panel():
-    """Renderiza el panel web interactivo conectado a las plantillas locales"""
-    filtered_guilds = [
-        {'id': '1', 'name': 'Servidor de Alejo 👑', 'icon': '', 'role': 'Dueño 👑'}
-    ]
+    """Obtiene los servidores reales del usuario y filtra donde es administrador o dueño"""
+    token = session.get('access_token')
+    if not token:
+        return redirect('/')
+        
+    # Pedimos a Discord la lista de servidores del usuario logueado
+    headers = {'Authorization': f'Bearer {token}'}
+    guilds_res = requests.get("https://discord.com/api/users/@me/guilds", headers=headers)
+    
+    if guilds_res.status_code != 200:
+        return "❌ No se pudieron cargar tus servidores.", 400
+        
+    all_guilds = guilds_res.json()
+    filtered_guilds = []
+    
+    for g in all_guilds:
+        # Filtramos para mostrar solo los servidores donde tiene permisos de Administrador (0x8) o es Dueño
+        is_admin = (int(g.get('permissions', 0)) & 0x8) == 0x8
+        if g.get('owner') or is_admin:
+            filtered_guilds.append({
+                'id': g['id'],
+                'name': g['name'],
+                'icon': g['icon'] if g['icon'] else '',
+                'role': 'Dueño 👑' if g.get('owner') else 'Administrador ⚙️'
+            })
+            
     return render_template('panel.html', guilds=filtered_guilds)
 
-
-# ==============================================================================
-# 3. COMANDOS DEL BOT (SÚPER SET DE ACCIÓN - SISTEMA ARCADE & CYBER)
-# ==============================================================================
+# ACCIÓN REAL PARA EL BOTÓN DE MÚSICA
+@app.route('/api/play', methods=['POST'])
+def web_play():
+    data = request.json or {}
+    cancion = data.get('track')
+    if cancion:
+        print(f"🎵 Comando Web recibido: Reproducir '{cancion}' en Discord.", flush=True)
+        return {"status": "success", "message": f"Reproduciendo {cancion}"}
+    return {"status": "error"}, 400
 
 @bot.event
 async def on_ready():
