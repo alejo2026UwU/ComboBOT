@@ -319,13 +319,17 @@ if __name__ == "__main__":
                         'role': 'Dueño 👑' if is_owner else 'Admin 🛠️'
                     })
             
-            # Le pasamos los servidores reales al archivo HTML para que los dibuje
+           # Le pasamos los servidores reales al archivo HTML para que los dibuje
             return render_template('server_panel.html', guilds=filtered_guilds)
 
-    def run(): 
-    import os
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
+        def run(): 
+            import os
+            app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
+            
+        import threading
         threading.Thread(target=run).start()
+
     except ImportError:
         pass
+
     bot.run(token)
