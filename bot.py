@@ -1,7 +1,8 @@
 import os
 import random
 import threading
-from flask import Flask, render_template, session, redirect, requests
+from flask import Flask, render_template, session, redirect, request
+import requests
 import discord
 from discord.ext import commands
 
