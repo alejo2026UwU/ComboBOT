@@ -89,10 +89,6 @@ def home():
 @app.route('/server_panel.html')
 def panel():
     """Renderiza el panel web interactivo conectado a las plantillas locales"""
-    access_token = session.get('access_token')
-    if not access_token:
-        return redirect('/')
-    
     filtered_guilds = [
         {'id': '1', 'name': 'Servidor de Alejo 👑', 'icon': '', 'role': 'Dueño 👑'}
     ]
