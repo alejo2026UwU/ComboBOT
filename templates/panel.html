@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nekotina Style Dashboard 👑</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #13111C;
+            --bg-sidebar: #1A1726;
+            --bg-card: #211E30;
+            --bg-card-hover: #2A263D;
+            --text-main: #FFFFFF;
+            --text-muted: #8F8C9F;
+            --accent: #FF66AC;
+            --premium: #B159FF;
+            --new: #248046;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* BARRA LATERAL SCROLLEABLE */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #2d2942;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2d2942;
+            background: #1e1a2e;
+        }
+
+        .sidebar-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 10px;
+        }
+
+        .menu-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 15px 0 5px 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 9px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .category-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background-color: var(--bg-card);
+            border: 1px solid #2d2942;
+            padding: 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            position: relative;
+        }
+
+        .module-card:hover {
+            background-color: var(--bg-card-hover);
+            transform: translateY(-3px);
+        }
+
+        .module-icon {
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .module-name {
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+
+        .module-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.65rem;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-premium { background-color: var(--premium); color: white; }
+        .badge-new { background-color: var(--new); color: white; }
+
+        /* INPUTS INTERACTIVOS */
+        .web-input {
+            background: #1A1726; 
+            border: 1px solid #2d2942; 
+            color: white; 
+            padding: 6px; 
+            border-radius: 6px; 
+            width: 70%;
+            font-size: 0.85rem;
+        }
+        .web-btn {
+            background: var(--accent); 
+            border: none; 
+            color: white; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .web-btn:hover { background-color: #d44d8c; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR ESTILO NEKOTINA -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span style="font-size: 1.3rem;">🐾</span>
+            <span>Alejo and friends! 👑</span>
+        </div>
+        
+        <div class="sidebar-scroll">
+            <a href="#" class="menu-item active"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-gears"></i> Ajustes</a>
+
+            <div class="menu-title">Alertas Sociales</div>
+            <a href="#" class="menu-item"><i class="fa-brands fa-instagram"></i> Instagram</a>
+            <a href="#" class="menu-item"><i class="fa-brands fa-twitch"></i> Twitch</a>
+            <a href="#" class="menu-item"><i class="fa-brands fa-youtube"></i> YouTube</a>
+
+            <div class="menu-title">Entretenimiento</div>
+            <a href="#" class="menu-item"><i class="fa-solid fa-gamepad"></i> 100 Minijuegos</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-music"></i> Música Wavelink</a>
+
+            <div class="menu-title">Utilidades</div>
+            <a href="#" class="menu-item"><i class="fa-solid fa-user-shield"></i> Autoroles</a>
+        </div>
+    </div>
+
+    <!-- CONTENIDO DE MÓDULOS -->
+    <div class="main-content">
+        
+        <!-- REDES -->
+        <div class="category-section">
+            <div class="category-title">Alertas Sociales 🌐</div>
+            <div class="category-subtitle">Vinvulá tus redes para que el bot avise al servidor.</div>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <span class="badge badge-premium">Premium</span>
+                    <div class="module-icon" style="color: #E1306C;"><i class="fa-brands fa-instagram"></i></div>
+                    <div class="module-name">Instagram</div>
+                    <div class="module-desc">Configurar cuenta pública.</div>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon" style="color: #9146FF;"><i class="fa-brands fa-twitch"></i></div>
+                    <div class="module-name">Twitch</div>
+                    <div class="module-desc">Avisa streams en vivo.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENTRETENIMIENTO Y WAVELINK -->
+        <div class="category-section">
+            <div class="category-title">Entretenimiento & Música 🎮</div>
+            <div class="category-subtitle">Comandos de minijuegos y reproducción en alta fidelidad.</div>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <span class="badge badge-new">100 Juegos</span>
+                    <div class="module-icon" style="color: #00D2FF;"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="module-name">Minijuegos Globales</div>
+                    <div class="module-desc">Economía activa con !work, !crime y casinos.</div>
+                </div>
+
+                <!-- TARJETA CONTROLADORA DE MÚSICA -->
+                <div class="module-card">
+                    <div class="module-icon" style="color: #1DB954;"><i class="fa-solid fa-music"></i></div>
+                    <div class="module-name">Música Pro (Wavelink)</div>
+                    <div class="module-desc">Poné temas en tu canal de voz directo desde acá:</div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <input type="text" id="songInput" class="web-input" placeholder="Nombre del tema...">
+                        <button onclick="playMusic()" class="web-btn">▶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UTILIDADES -->
+        <div class="category-section">
+            <div class="category-title">Gestión 🛠️</div>
+            <div class="category-subtitle">Asignación automática interna.</div>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon" style="color: #5865F2;"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="module-name">Autoroles</div>
+                    <div class="module-desc">Roles interactivos configurados por botones.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function playMusic() {
+            const tema = document.getElementById('songInput').value;
+            if(tema) {
+                alert('🎵 Mandando señal al Bot para reproducir: ' + tema);
+            } else {
+                alert('❌ ¡Escribí una canción primero!');
+            }
+        }
+    </script>
+</body>
+</html>
