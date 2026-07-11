@@ -241,14 +241,21 @@ async def crearmeme(interaction: discord.Interaction, plantilla: app_commands.Ch
     embed.set_image(url=url_meme)
     await interaction.followup.send(embed=embed)
 
-# EMULADOR DE PUERTO WEB PARA RENDER
+# EMULADOR DE PUERTO WEB PARA RENDER (CON LA CARPETA TEMPLATES)
 if __name__ == "__main__":
-    token = os.environ.get("TOKEN") or "MTUyNTI4MDQ3OTQ3NjA2MDIxMA.GPadXQ.uUfCRzS6TgR0TmbGteKWyau7b4YRqv0bwWCWck"
+    token = os.environ.get("TOKEN") or "MTUyNTI4MDQ3OTQ3NjA2MDIxMA.G-R_h0.AKH-bucbzKEpcWdyP6dnHJIFSm8TNLpGExLD4s"
     try:
-        from flask import Flask
-        app = Flask('')
+        from flask import Flask, render_template
+        app = Flask('', template_folder='templates')
+        
         @app.route('/')
-        def home(): return "ComboBOT Online"
+        def home(): 
+            return render_template('index.html')
+
+        @app.route('/server_panel.html')
+        def panel(): 
+            return render_template('server_panel.html')
+
         def run(): app.run(host='0.0.0.0', port=8080)
         threading.Thread(target=run).start()
     except ImportError:
