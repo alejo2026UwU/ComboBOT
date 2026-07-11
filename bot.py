@@ -241,20 +241,86 @@ async def crearmeme(interaction: discord.Interaction, plantilla: app_commands.Ch
     embed.set_image(url=url_meme)
     await interaction.followup.send(embed=embed)
 
-# EMULADOR DE PUERTO WEB PARA RENDER (CON LA CARPETA TEMPLATES)
+# EMULADOR DE PUERTO WEB CON OAUTH2 REAL DE DISCORD
 if __name__ == "__main__":
-    token = os.environ.get("TOKEN") or "MTUyNTI4MDQ3OTQ3NjA2MDIxMA.G-R_h0.AKH-bucbzKEpcWdyP6dnHJIFSm8TNLpGExLD4s"
+    token = os.environ.get("TOKEN") or "MTUyNTI4MDQ3OTQ3NjA2MDIxMA.GPadXQ.uUfCRzS6TgR0TmbGteKWyau7b4YRqv0bwWCWck"
+    
     try:
-        from flask import Flask, render_template
+        from flask import Flask, render_template, request, redirect, session
+        import requests
+        
         app = Flask('', template_folder='templates')
+        app.secret_key = "un_secreto_super_seguro_para_las_cookies" # Cambia esto por lo que quieras
+        
+        # CONFIGURACIÓN DE TU CLIENTE DISCORD
+        CLIENT_ID = "1525280479476060210"
+        CLIENT_SECRET = "" # <-- Buscalo en Discord Developer Portal (OAuth2 -> General)
+        REDIRECT_URI = "https://tu-app-en-render.onrender.com/callback" # <-- Cambialo por tu URL real de Render + /callback
         
         @app.route('/')
         def home(): 
             return render_template('index.html')
 
+        @app.route('/login')
+        def login():
+            # Redirige directo a tu url de autorización de Discord
+            return redirect(f"https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope=identify+guilds")
+
+        @app.route('/callback')
+        def callback():
+            code = request.args.get('code')
+            if not code:
+                return "Error: No se recibió el código de Discord.", 400
+                
+            # Intercambiar el código por un Token de Acceso del usuario
+            data = {
+                'client_id': CLIENT_ID,
+                'client_secret': CLIENT_SECRET,
+                'grant_type': 'authorization_code',
+                'code': code,
+                'redirect_uri': REDIRECT_URI
+            }
+            headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+            r = requests.post('%s/oauth2/token' % "https://discord.com/api", data=data, headers=headers)
+            r.raise_for_status()
+            tokens = r.json()
+            
+            # Guardamos el token del usuario en su sesión del navegador
+            session['access_token'] = tokens['access_token']
+            return redirect('/server_panel.html')
+
         @app.route('/server_panel.html')
-        def panel(): 
-            return render_template('server_panel.html')
+        def panel():
+            access_token = session.get('access_token')
+            if not access_token:
+                return redirect('/login') # Si no está logueado, lo manda a loguear
+                
+            # Pedir a la API de Discord los servidores REALES del usuario
+            headers = {'Authorization': f'Bearer {access_token}'}
+            guilds_res = requests.get('https://discord.com/api/users/@me/guilds', headers=headers)
+            
+            if guilds_res.status_code != 200:
+                return "Error al obtener tus servidores de Discord.", 500
+                
+            all_guilds = guilds_res.json()
+            
+            # Filtrar: solo dejamos los servidores donde es DUEÑO (owner=True) o tiene permisos de ADMIN (permissions & 0x8)
+            filtered_guilds = []
+            for g in all_guilds:
+                is_owner = g.get('owner', False)
+                perms = int(g.get('permissions', 0))
+                is_admin = (perms & 0x8) == 0x8
+                
+                if is_owner or is_admin:
+                    filtered_guilds.append({
+                        'id': g['id'],
+                        'name': g['name'],
+                        'icon': f"https://cdn.discordapp.com/icons/{g['id']}/{g['icon']}.png" if g['icon'] else "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png",
+                        'role': 'Dueño 👑' if is_owner else 'Admin 🛠️'
+                    })
+            
+            # Le pasamos los servidores reales al archivo HTML para que los dibuje
+            return render_template('server_panel.html', guilds=filtered_guilds)
 
         def run(): app.run(host='0.0.0.0', port=8080)
         threading.Thread(target=run).start()
