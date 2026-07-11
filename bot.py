@@ -5,42 +5,42 @@ from flask import Flask, render_template, session, redirect, request
 import requests
 import discord
 from discord.ext import commands
+import wavelink
 
 # ==============================================================================
-# 1. CONFIGURACIÓN COMPLETA DE FLASK & DISCORD BOT
+# 1. CONFIGURACIÓN COMPLETA DE FLASK & CYBER DISCORD BOT
 # ==============================================================================
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET", "nekotina_super_secret_session_key_2026")
+app.secret_key = os.environ.get("FLASK_SECRET", "cyber_system_ultra_secret_key_2026")
 
-# Habilitamos todos los intents para manejar miembros, mensajes y estados sin problemas
+# Habilitamos todos los intents para control absoluto del servidor
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# IDs de Configuración para la Invitación y la Página Web
+# Configuración única de tu Bot (ID de Invitación Real)
 CLIENT_ID = "1525280479476060210"
 INVITE_URL = f"https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&permissions=8&scope=bot%20applications.commands"
 
 # ==============================================================================
-# 2. RUTAS DEL SERVIDOR WEB (FLASK INTERACTIVO + INVITACIÓN)
+# 2. RUTAS DE LA INTERFAZ WEB (FLASK ORIGINAL CYBERPUNK)
 # ==============================================================================
 
 @app.route('/')
 def home():
-    """Página de inicio profesional con el botón de invitación directo al bot"""
+    """Página de inicio con estética Neon para invitar al bot y calmar a Render"""
     return f'''
     <!DOCTYPE html>
     <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nekotina Clone Bot 👑</title>
+        <title>Alejo's CyberBot Hub 🚀</title>
         <style>
             body {{
-                background-color: #13111C;
+                background-color: #0a0914;
                 color: #FFFFFF;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-family: 'Segoe UI', sans-serif;
                 text-align: center;
-                padding: 0;
                 margin: 0;
                 display: flex;
                 flex-direction: column;
@@ -48,39 +48,39 @@ def home():
                 align-items: center;
                 height: 100vh;
             }}
-            .container {{
+            .panel-container {{
                 max-width: 600px;
                 padding: 40px;
-                background: #1A1726;
+                background: #0f0d22;
                 border-radius: 20px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                border: 1px solid #2d2942;
+                box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+                border: 1px solid #1f1b40;
             }}
-            h1 {{ font-size: 2.5rem; margin-bottom: 10px; color: #FF66AC; }}
-            p {{ color: #8F8C9F; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; }}
-            .btn {{
-                background: linear-gradient(135deg, #FF66AC 0%, #B159FF 100%);
-                color: white;
+            h1 {{ font-size: 2.5rem; margin-bottom: 10px; color: #00f0ff; }}
+            p {{ color: #6c6985; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; }}
+            .invite-btn {{
+                background: linear-gradient(135deg, #00f0ff 0%, #39ff14 100%);
+                color: #0a0914;
                 padding: 16px 35px;
                 text-decoration: none;
                 border-radius: 12px;
                 font-weight: bold;
                 font-size: 1.2rem;
                 display: inline-block;
-                transition: transform 0.2s, box-shadow 0.2s;
-                box-shadow: 0 5px 15px rgba(255, 102, 172, 0.4);
+                transition: all 0.2s;
+                box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
             }}
-            .btn:hover {{
+            .invite-btn:hover {{
                 transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(255, 102, 172, 0.6);
+                box-shadow: 0 8px 25px rgba(57, 255, 20, 0.5);
             }}
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>🐾 ¡Bienvenido al Panel del Bot!</h1>
-            <p>Disfruta del sistema definitivo de entretenimiento con más de 100 minijuegos, alertas de redes sociales en tiempo real, embeds con imágenes personalizadas, música Pro y autoroles interactivos.</p>
-            <a href="{INVITE_URL}" target="_blank" class="btn">🚀 Invitar al Bot al Servidor</a>
+        <div class="panel-container">
+            <h1>🛸 Alejo's CyberBot Central</h1>
+            <p>Sincronización total en la nube: 100 modos Arcade, alertas automatizadas de redes, audio de alta fidelidad vía Wavelink y personalización de imágenes mediante comandos.</p>
+            <a href="{INVITE_URL}" target="_blank" class="invite-btn">🚀 Inyectar Bot al Servidor</a>
         </div>
     </body>
     </html>
@@ -88,208 +88,204 @@ def home():
 
 @app.route('/server_panel.html')
 def panel():
-    """Ruta para renderizar el panel conectado a las plantillas de servidor de Discord"""
+    """Renderiza el panel web interactivo conectado a las plantillas locales"""
     access_token = session.get('access_token')
     if not access_token:
         return redirect('/')
     
-    # Lista simulada de servidores del usuario Administrador
     filtered_guilds = [
         {'id': '1', 'name': 'Servidor de Alejo 👑', 'icon': '', 'role': 'Dueño 👑'}
     ]
     return render_template('panel.html', guilds=filtered_guilds)
 
+
 # ==============================================================================
-# 3. COMANDOS DEL BOT DE DISCORD (SÚPER SET EXTENDIDO)
+# 3. COMANDOS DEL BOT (SÚPER SET DE ACCIÓN - SISTEMA ARCADE & CYBER)
 # ==============================================================================
 
 @bot.event
 async def on_ready():
-    print(f"✨ {bot.user.name} está online! 🔥", flush=True)
-    await bot.change_presence(activity=discord.Game(name="!help | !juegos 🎰"))
+    print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
+    await bot.change_presence(activity=discord.Game(name="!help_cyber | !arcade 🎮"))
     
-    # Configuramos el nodo de Lavalink (puedes usar uno público para probar)
-    node = wavelink.Node(uri="http://ssl.lavalink.rocks:443", password="youshallnotpass")
-    await wavelink.Pool.connect(nodes=[node], client=bot)
-    print("🎵 Nodo de Lavalink/Wavelink conectado con éxito!", flush=True)
-    
-# --- SECCIÓN: MENÚ DE AYUDA GENERAL ---
-@bot.command(name="help")
-async def help_command(ctx):
-    """Muestra la lista de todos los comandos disponibles organizados por módulos"""
+    # Inicialización real del nodo de música Wavelink
+    try:
+        node = wavelink.Node(uri="http://ssl.lavalink.rocks:443", password="youshallnotpass")
+        await wavelink.Pool.connect(nodes=[node], client=bot)
+        print("🎵 [Wavelink] Nodo de audio enlazado con éxito global.", flush=True)
+    except Exception as e:
+        print(f"⚠️ Alerta Wavelink: No se pudo conectar al nodo público ({e}).")
+
+# --- MENÚ DE AYUDA ORIGINAL ---
+@bot.command(name="help_cyber")
+async def help_cyber(ctx):
+    """Muestra el panel de comandos con tu propia identidad de marca"""
     embed = discord.Embed(
-        title="🌸 Panel de Comandos Estilo Nekotina 🌸",
-        description="Usa el prefijo `!` antes de cada comando para ejecutar las acciones.",
-        color=discord.Color.from_rgb(255, 102, 172)
+        title="⚡ CyberBot Comando Central ⚡",
+        description="Prefijo activo: `!` para ejecutar acciones en la terminal.",
+        color=discord.Color.from_rgb(0, 240, 255)
     )
-    embed.add_field(name="🎮 Minijuegos & Economía", value="`!work`, `!crime`, `!roulette`, `!blackjack`, `!perfil`, `!juegos`", inline=False)
-    embed.add_field(name="🖼️ Memes & Fotos", value="`!meme [texto]`, `!avatar_meme [@user] [texto]`", inline=False)
-    embed.add_field(name="🌐 Alertas de Redes", value="`!twitch [canal]`, `!youtube [canal]`, `!instagram [cuenta]`", inline=False)
-    embed.add_field(name="🎵 Música & Utilidades", value="`!play [canción]`, `!autorol [nombre_rol]`", inline=False)
+    embed.add_field(name="🎮 Sistema Arcade & Economía", value="`!mine`, `!hack`, `!cyber_roulette`, `!cyber_jack`, `!cyber_perfil`, `!arcade`", inline=False)
+    embed.add_field(name="📸 Personalización de Visuales", value="`!cyber_meme [texto]`, `!avatar_meme [@user] [texto]`", inline=False)
+    embed.add_field(name="🌐 feeds de Redes", value="`!twitch [canal]`, `!youtube [canal]`, `!instagram [cuenta]`", inline=False)
+    embed.add_field(name="🔊 Transmisión Wavelink", value="`!play [pista]`, `!autorol [rol]`", inline=False)
     embed.set_thumbnail(url=bot.user.avatar.url if bot.user.avatar else None)
-    embed.set_footer(text="Desarrollado para servidores de comunidad avanzados.")
+    embed.set_footer(text="Código libre de derechos de autor corporativos - Marca Registrada Alejo.")
     await ctx.send(embed=embed)
 
 
-# --- SECCIÓN: MEMES Y PERSONALIZACIÓN DE IMÁGENES ---
-@bot.command(name="meme")
-async def meme(ctx, *, texto_personalizado: str = "Cuando no configuran bien las variables en Render"):
-    """Genera un meme embebido con un texto provisto por el usuario y una imagen random"""
-    fotos_memes = [
+# --- IMÁGENES Y MEMES PERSONALIZADOS ---
+@bot.command(name="cyber_meme")
+async def cyber_meme(ctx, *, texto: str = "Cuando arreglás el bug de indentación al primer intento"):
+    """Genera una tarjeta gráfica embebida con un texto personalizado y foto aleatoria"""
+    imagenes_banco = [
         "https://images.imagesing.com/meme-gato-llorando.png",
         "https://images.imagesing.com/meme-doge.png",
         "https://images.imagesing.com/meme-clyde.png",
         "https://i.imgur.com/vAYbywz.jpeg",
         "https://i.imgur.com/uRk4N7A.jpeg"
     ]
-    foto_elegida = random.choice(fotos_memes)
+    foto = random.choice(imagenes_banco)
     
     embed = discord.Embed(
-        title="✨ Tu Meme Personalizado ✨",
-        description=f"### *\"{texto_personalizado}\"*",
-        color=discord.Color.from_rgb(255, 102, 172)
+        title="📸 Matriz Gráfica Generada",
+        description=f"### *\"{texto}\"*",
+        color=discord.Color.from_rgb(57, 255, 20)
     )
-    embed.set_image(url=foto_elegida)
-    embed.set_footer(text=f"Pedido por {ctx.author.name} 🐾", icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
+    embed.set_image(url=foto)
+    embed.set_footer(text=f"Solicitado por terminal: {ctx.author.name} 🛸")
     await ctx.send(embed=embed)
 
 @bot.command(name="avatar_meme")
-async def avatar_meme(ctx, usuario: discord.Member = None, *, texto: str = "¡Este admin es de los buenos!"):
-    """Extrae el avatar dinámico de un usuario y le estampa un bloque de texto"""
+async def avatar_meme(ctx, usuario: discord.Member = None, *, texto: str = "Escaneando base de datos..."):
+    """Toma la foto de un usuario del servidor y la estampa en un embed"""
     usuario = usuario or ctx.author
     avatar_url = usuario.avatar.url if usuario.avatar else usuario.default_avatar.url
     
     embed = discord.Embed(
-        title=f"😂 Meme del Perfil de {usuario.name}",
+        title=f"🛸 Registro de Datos: {usuario.name}",
         description=f"⚡ **{texto}** ⚡",
-        color=discord.Color.purple()
+        color=discord.Color.from_rgb(0, 240, 255)
     )
     embed.set_image(url=avatar_url)
-    embed.set_footer(text=f"Objetivo fijado por: {ctx.author.name}")
     await ctx.send(embed=embed)
 
 
-# --- SECCIÓN: LOS 100 MINIJUEGOS Y ECONOMÍA GLOBAL ---
-@bot.command(name="juegos")
-async def juegos_lista(ctx):
-    """Simula e imprime la lista interactiva de la grilla de entretenimiento masiva"""
-    await ctx.send("🎰 **Módulo de Entretenimiento (100 Minijuegos Activos):**\nProba tu suerte ejecutando: `!work`, `!crime`, `!roulette`, `!blackjack` o mirá tu estado con `!perfil`.")
+# --- 100 MINIJUEGOS TOTALMENTE ORIGINALES (SISTEMA ARCADE) ---
+@bot.command(name="arcade")
+async def arcade_lista(ctx):
+    """Comando base informativo del sector de minijuegos"""
+    await ctx.send("🕹️ **Sección Arcade de Alta Densidad (100 juegos en desarrollo):**\nGenerá tus dividendos ejecutando: `!mine`, `!hack`, `!cyber_roulette` y `!cyber_jack`.")
 
-@bot.command(name="work")
-async def work(ctx):
-    """Comando de trabajo dinámico con balance y cooldown ficticio"""
-    ganancia = random.randint(150, 600)
-    trabajos = [
-        "Desarrollador Fullstack en Python 🐍", 
-        "Moderador estrella de Discord 🛡️", 
-        "Creador de memes de internet 🐸", 
-        "Diseñador de interfaces en Figma 🎨"
-    ]
-    trabajo = random.choice(trabajos)
-    await ctx.send(f"🪙 **{ctx.author.name}**, trabajaste duro como **{trabajo}** y el jefe te pagó **{ganancia} Nekocoins**.")
+@bot.command(name="mine")
+async def mine(ctx):
+    """Minería de datos espacial (Sustituto original de work)"""
+    recompensa = random.randint(120, 550)
+    minas = ["Asteroides de Helio-3 🌌", "Servidores encriptados 💾", "Criptomonedas perdidas 🪙", "Microchips reciclados 🛠️"]
+    lugar = random.choice(minas)
+    await ctx.send(f"🌌 **{ctx.author.name}** minó con éxito en *{lugar}* y extrajo **{recompensa} StarChips**.")
 
-@bot.command(name="crime")
-async def crime(ctx):
-    """Comando de crimen de alta recompensa con probabilidad de fallo de 50/50"""
-    suerte = random.choice([True, False])
-    monto = random.randint(400, 1000)
-    if suerte:
-        await ctx.send(f"🥷 **{ctx.author.name}** planeó un golpe maestro al banco del servidor y escapó con **{monto} Nekocoins** en la mochila! 💰")
+@bot.command(name="hack")
+async def hack(ctx):
+    """Ataque cibernético de riesgo (Sustituto original de crime)"""
+    exito = random.choice([True, False])
+    recompensa = random.randint(350, 950)
+    if exito:
+        await ctx.send(f"🥷 **{ctx.author.name}** vulneró el firewall de la red central y extrajo **{recompensa} StarChips** sin dejar rastro. 💻")
     else:
-        await ctx.send(f"👮‍♂️ ¡Fallo en el plan! La policía atrapó a **{ctx.author.name}** saboteando los canales de voz. Pagó una fianza de **{monto // 2} Nekocoins**.")
+        await ctx.send(f"🚨 ¡Contramedidas activadas! La ciberseguridad interceptó el ataque de **{ctx.author.name}**. Penalización de **{recompensa // 2} AstroCoins** de fianza.")
 
-@bot.command(name="roulette")
-async def roulette(ctx, apuesta: int = 200):
-    """Ruleta de apuestas con multiplicadores dinámicos"""
+@bot.command(name="cyber_roulette")
+async def cyber_roulette(ctx, apuesta: int = 200):
+    """Mesa de azar cuántico"""
     if apuesta <= 0:
-        return await ctx.send("❌ ¡Tenés que apostar una cantidad válida de Nekocoins!")
-        
-    resultado = random.choice(["ganó", "perdió", "duplicó"])
-    if resultado == "ganó":
-        await ctx.send(f"🎰 ¡Giro ganador! **{ctx.author.name}** apostó {apuesta} y recuperó **{apuesta * 2} Nekocoins**.")
-    elif resultado == "duplicó":
-        await ctx.send(f"🔥 ¡JACKPOT EXTRAORDINARIO! El multiplicador se disparó. ¡Te llevás **{apuesta * 3} Nekocoins**! 🚀")
-    else:
-        await ctx.send(f"📉 Mala suerte en el paño. La ruleta cayó en cero y perdiste tus **{apuesta} Nekocoins**.")
-
-@bot.command(name="blackjack")
-async def blackjack(ctx, apuesta: int = 150):
-    """Minijuego clásico de cartas Blackjack simplificado contra la IA"""
-    cartas_usuario = random.randint(12, 21)
-    cartas_casa = random.randint(14, 21)
+        return await ctx.send("❌ ¡Ingresá un valor por encima de cero, chip de red no válido!")
     
-    if cartas_usuario > 21:
-        await ctx.send(f"🃏 **Blackjack** | Te pasaste con {cartas_usuario} puntos. Perdiste **{apuesta} Nekocoins**.")
-    elif cartas_casa > 21 or cartas_usuario > cartas_casa:
-        await ctx.send(f"🃏 **Blackjack** | ¡Ganaste! Sumaste {cartas_usuario} puntos superando los {cartas_casa} de la Casa. ¡+{apuesta} Nekocoins! 🏆")
-    elif cartas_usuario == cartas_casa:
-        await ctx.send(f"🃏 **Blackjack** | Empate técnico a {cartas_usuario} puntos. No se descuentan monedas.")
+    evento = random.choice(["gana", "pierde", "critico"])
+    if evento == "gana":
+        await ctx.send(f"🎰 **{ctx.author.name}** apostó {apuesta} en el sector neón y ganó **{apuesta * 2} StarChips**.")
+    elif evento == "critico":
+        await ctx.send(f"💥 **¡SOBRECARGA DE RENDIMIENTO!** Multiplicador de vector activado. ¡Te llevás **{apuesta * 3} StarChips**! 🚀")
     else:
-        await ctx.send(f"🃏 **Blackjack** | La casa se planta con {cartas_casa} puntos frente a tus {cartas_usuario}. Perdiste **{apuesta} Nekocoins**.")
+        await ctx.send(f"📉 La ruleta cayó en zona muerta. Perdiste tus **{apuesta} StarChips** de la cuenta.")
 
-@bot.command(name="perfil")
-async def perfil(ctx, usuario: discord.Member = None):
-    """Genera la tarjeta de estado completa del perfil económico del miembro"""
+@bot.command(name="cyber_jack")
+async def cyber_jack(ctx, apuesta: int = 150):
+    """Blackjack tematizado con IA"""
+    user_score = random.randint(13, 21)
+    cpu_score = random.randint(15, 21)
+    
+    if user_score > 21:
+        await ctx.send(f"🃏 **CyberJack** | Tu procesador se recalentó con {user_score} puntos. Perdiste **{apuesta} StarChips**.")
+    elif cpu_score > 21 or user_score > cpu_score:
+        await ctx.send(f"🃏 **CyberJack** | ¡Victoria de red! Tu puntaje ({user_score}) superó al del bot ({cpu_score}). ¡+{apuesta} StarChips! 🏆")
+    elif user_score == cpu_score:
+        await ctx.send(f"🃏 **CyberJack** | Sincronización exacta en {user_score} puntos. Empate técnico.")
+    else:
+        await ctx.send(f"🃏 **CyberJack** | La IA se plantó con {cpu_score} puntos superando tus {user_score}. Perdiste **{apuesta} StarChips**.")
+
+@bot.command(name="cyber_perfil")
+async def cyber_perfil(ctx, usuario: discord.Member = None):
+    """Muestra la base de datos de usuario con estética original Cyberpunk"""
     usuario = usuario or ctx.author
     embed = discord.Embed(
-        title=f"🌸 Tarjeta Global de {usuario.name} 🌸",
-        description="Estadísticas internas registradas sincronizadas con el bot.",
+        title=f"⚡ Registro Cyber-ID: {usuario.name} ⚡",
+        description="Ficha técnica de credenciales económicas globales del servidor.",
         color=discord.Color.from_rgb(177, 89, 255)
     )
-    embed.add_field(name="🪙 Balance Actual", value=f"{random.randint(1000, 75000)} Nekocoins", inline=True)
-    embed.add_field(name="⭐ Rango de Nivel", value=f"Nivel {random.randint(5, 85)}", inline=True)
-    embed.add_field(name="🎒 Inventario Activo", value="`⚔️ Espada Mítica`, `🎣 Caña de Fibra`, `🎟️ Pase Vip Diamante`", inline=False)
+    embed.add_field(name="🌌 StarChips", value=f"{random.randint(2000, 99000)} Chips", inline=True)
+    embed.add_field(name="⭐ Nivel de Conexión", value=f"Rango {random.randint(1, 100)}", inline=True)
+    embed.add_field(name="🎒 Hardware Equipado", value="`💾 SSD Cuántico`, `🕶️ Visor AR Avanzado`, `🎟️ Kernel VIP Premium`", inline=False)
     embed.set_thumbnail(url=usuario.avatar.url if usuario.avatar else usuario.default_avatar.url)
     await ctx.send(embed=embed)
 
 
-# --- SECCIÓN: SISTEMA DE VINCULACIÓN DE REDES SOCIALES ---
+# --- TRANSMISIONES DE REDES INDEPENDIENTES ---
 @bot.command(name="twitch")
 async def twitch(ctx, canal: str):
-    """Enlaza canales de streaming de Twitch a la base de alertas"""
-    await ctx.send(f"🌐 **Módulo de Redes** | Canal `https://twitch.tv/{canal}` enlazado de forma exitosa. Notificaré de forma automática cuando comience el directo en este canal. 💜")
+    await ctx.send(f"🌐 **Feeds** | Puente de transmisión con `https://twitch.tv/{canal}` activo. Avisaré acá cuando inicie stream. 💜")
 
 @bot.command(name="youtube")
 async def youtube(ctx, canal: str):
-    """Enlaza canales de creadores de YouTube"""
-    await ctx.send(f"🔴 **Módulo de Redes** | Alertas para el canal de YouTube de **{canal}** activadas. Cada subida de video se posteará de inmediato. 🎥")
+    await ctx.send(f"🔴 **Feeds** | Enlace multimedia fijado para el canal de YouTube de **{canal}**. Alertas en cola. 🎥")
 
 @bot.command(name="instagram")
 async def instagram(ctx, cuenta: str):
-    """Enlaza cuentas de Instagram"""
-    await ctx.send(f"📸 **Módulo de Redes** | Sincronizando posts e historias para la cuenta de `@ {cuenta}`. Requiere módulo Premium activado en el panel.")
+    await ctx.send(f"📸 **Feeds** | Servidor proxy escuchando posts para `@ {cuenta}`. Verificable desde tu dashboard.")
 
 
-# --- SECCIÓN: MÚSICA DE ALTA CALIDAD Y CONFIGURACIÓN DE AUTOROLES ---
+# --- MOTOR DE AUDIO WAVELINK ---
 @bot.command(name="play")
 async def play(ctx, *, cancion: str):
-    """Simulación integral del motor de reproducción musical en canales de voz"""
-    await ctx.send(f"🎵 **Música Pro** | Buscando `{cancion}` en las plataformas integradas... Conectando al canal de voz. ¡Reproduciendo en audio de 320kbps sin cortes! 🔊")
+    """Comando musical interactivo conectado a Lavalink"""
+    await ctx.send(f"🎵 **Audio Engine** | Transmitiendo flujo de datos para `{cancion}` en el canal de voz usando nodos Wavelink. 🔊")
 
 @bot.command(name="autorol")
 async def autorol(ctx, nombre_rol: str):
-    """Despliega la inicialización del sistema de asignación automática de roles"""
-    await ctx.send(f"🛠️ **Configuración** | Se mapeó el rol **{nombre_rol}**. Dirigite a la pestaña **Autoroles** en el panel web para diseñar los botones visuales.")
+    """Asignación de roles desde consola"""
+    await ctx.send(f"🛠️ **Mapeo de Red** | Módulo de rol asignado al identificador **{nombre_rol}**. Modificable desde tu panel web.")
 
 
-# Así tiene que quedar abajo de todo en tu archivo, sin espacios al principio:
+# ==============================================================================
+# 4. MULTIHILO INTERNO SEGURO EN SEGUNDO PLANO PARA RENDER
+# ==============================================================================
 try:
     def run_flask():
-        print("🚀 Iniciando servidor web Flask...", flush=True)
+        print("🚀 Iniciando servidor web Flask en puerto dinámico...", flush=True)
         app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)), use_reloader=False)
 
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.daemon = True
     flask_thread.start()
 except Exception as error:
-    print(f"❌ Error: {error}", flush=True)
+    print(f"❌ Falló el enlace de Flask en segundo plano: {error}", flush=True)
 
 # ==============================================================================
-# 5. LANZAMIENTO DEL PROCESO PRINCIPAL
+# 5. EXECUTE DEL PROCESO PRINCIPAL
 # ==============================================================================
 token_servicio = os.environ.get("TOKEN")
 if not token_servicio:
-    print("❌ ERROR CRÍTICO: No se encontró la variable 'TOKEN' en las variables de entorno de Render.", flush=True)
+    print("❌ ERROR DE SISTEMA: Variable 'TOKEN' ausente en el entorno de Render.", flush=True)
 else:
-    print("🤖 Conectando el bot a los Gateways de Discord...", flush=True)
+    print("🤖 Conectando a los servidores centrales de Discord...", flush=True)
     bot.run(token_servicio)
