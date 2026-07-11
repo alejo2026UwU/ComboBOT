@@ -105,9 +105,14 @@ def panel():
 
 @bot.event
 async def on_ready():
-    print(f"✨ {bot.user.name} está online y listo para la acción! 🔥", flush=True)
+    print(f"✨ {bot.user.name} está online! 🔥", flush=True)
     await bot.change_presence(activity=discord.Game(name="!help | !juegos 🎰"))
-
+    
+    # Configuramos el nodo de Lavalink (puedes usar uno público para probar)
+    node = wavelink.Node(uri="http://ssl.lavalink.rocks:443", password="youshallnotpass")
+    await wavelink.Pool.connect(nodes=[node], client=bot)
+    print("🎵 Nodo de Lavalink/Wavelink conectado con éxito!", flush=True)
+    
 # --- SECCIÓN: MENÚ DE AYUDA GENERAL ---
 @bot.command(name="help")
 async def help_command(ctx):
