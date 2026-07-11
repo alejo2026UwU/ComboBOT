@@ -3,159 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ComboBOT — Dashboard 👑</title>
+    <title>Nekotina Style Dashboard 👑</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #050811;
-            --bg-sidebar: #090e1a;
-            --bg-card: #0e1526;
-            --bg-input: #131d33;
-            --text-main: #f5f7fa;
-            --text-muted: #7d8da6;
-            --green-neon: #2ecc71;
-            --red-accent: #e74c3c;
+            --bg-main: #13111C;
+            --bg-sidebar: #1A1726;
+            --bg-card: #211E30;
+            --bg-card-hover: #2A263D;
+            --text-main: #FFFFFF;
+            --text-muted: #8F8C9F;
+            --accent: #FF66AC;
+            --premium: #B159FF;
+            --new: #248046;
         }
+
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Inter', system-ui, sans-serif;
             margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
-        /* SELECTOR DE SERVIDORES PANTALLA COMPLETA */
-        .server-selector-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg-dark); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .server-grid { display: flex; gap: 25px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
-        .server-card { background: var(--bg-card); padding: 25px; border-radius: 12px; text-align: center; width: 180px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
-        .server-card:hover { border-color: var(--green-neon); transform: translateY(-5px); }
-        .server-card img { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 15px; border: 2px solid #5865F2; }
-        .server-badge { background: rgba(46, 204, 113, 0.2); color: var(--green-neon); font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
 
-        /* PANEL PRINCIPAL */
-        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; padding: 20px 0; }
-        .bot-brand { padding: 0 25px 20px 25px; font-size: 1.3rem; font-weight: 800; border-bottom: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 15px; }
-        .bot-brand span { color: var(--green-neon); }
-        .menu-section { padding: 10px 25px 5px 25px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; font-weight: bold; }
-        .menu-item { padding: 12px 25px; color: var(--text-main); text-decoration: none; font-size: 0.95rem; display: flex; align-items: center; gap: 12px; transition: 0.2s; cursor: pointer; }
-        .menu-item:hover, .menu-item.active { background-color: rgba(46, 204, 113, 0.1); color: var(--green-neon); border-left: 4px solid var(--green-neon); padding-left: 21px; }
-        .menu-item.danger-item:hover { background-color: rgba(231, 76, 60, 0.1); color: var(--red-accent); border-left-color: var(--red-accent); }
-        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .top-nav { background-color: var(--bg-sidebar); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .server-info { display: flex; align-items: center; gap: 12px; }
-        .server-icon { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--green-neon); }
-        .content-body { padding: 40px; max-width: 1000px; }
-        
-        /* SECCIONES OCULTAS POR DEFECTO */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .config-box { background-color: var(--bg-card); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.03); padding: 30px; margin-bottom: 25px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
-        .form-input, select { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; color: white; box-sizing: border-box; outline: none; }
-        .btn-save { background-color: var(--green-neon); color: #050811; font-weight: bold; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; }
-        .btn-save:hover { background-color: #27ae60; }
+        /* BARRA LATERAL SCROLLEABLE */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #2d2942;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2d2942;
+            background: #1e1a2e;
+        }
+
+        .sidebar-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 10px;
+        }
+
+        .menu-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 15px 0 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 9px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* GRILLA Y CONTENIDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .category-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background-color: var(--bg-card);
+            border: 1px solid #2d2942;
+            padding: 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            position: relative;
+        }
+
+        .module-card:hover {
+            background-color: var(--bg-card-hover);
+            transform: translateY(-3px);
+        }
+
+        .module-icon {
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .module-name {
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+
+        .module-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.65rem;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-premium { background-color: var(--premium); color: white; }
+        .badge-new { background-color: var(--new); color: white; }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA SELECCIÓN DE SERVIDORES (ESTILO NEKOTINA) -->
-    <div class="server-selector-screen" id="serverSelector">
-        <h1 style="margin:0;">Selecciona un Servidor 👑</h1>
-        <p style="color: var(--text-muted);">Sólo se muestran los servidores donde eres Dueño o Administrador.</p>
-<div class="server-grid">
-    {% for guild in guilds %}
-    <div class="server-card" onclick="seleccionarServidor('{{ guild.name }}', '{{ guild.icon }}')">
-        <img src="{{ guild.icon }}" alt="{{ guild.name }}">
-        <div style="font-weight: bold; margin-bottom:8px;">{{ guild.name }}</div>
-        <span class="server-badge">{{ guild.role }}</span>
-    </div>
-    {% else %}
-    <p>No se encontraron servidores donde tengas permisos de Administrador. 😢</p>
-    {% endfor %}
-</div>
-
-    <!-- ESTRUCTURA DEL PANEL ORIGINAL -->
+    <!-- BARRA LATERAL COMPLETA (TU FOTO) -->
     <div class="sidebar">
-        <div class="bot-brand">🤖 <span>Combo</span>BOT</div>
-        <div class="menu-section">Módulos Básicos</div>
-        <div onclick="cambiarPestaña('configuracion', this)" class="menu-item active">⚙️ Configuración</div>
-        <div onclick="cambiarPestaña('bienvenidas', this)" class="menu-item">🚪 Bienvenidas</div>
-        <div class="menu-section">Entretenimiento</div>
-        <div onclick="cambiarPestaña('musica', this)" class="menu-item">🎶 Música</div>
-        <div onclick="cambiarPestaña('juegos', this)" class="menu-item">🎮 100 Minijuegos</div>
-        <div class="menu-section" style="margin-top:auto;">Ajustes</div>
-        <a href="/" class="menu-item danger-item">⬅️ Salir del Panel</a>
-    </div>
-
-    <div class="main-wrapper">
-        <div class="top-nav">
-            <div class="server-info">
-                <img class="server-icon" id="navServerIcon" src="" alt="Server">
-                <strong id="navServerName">Cargando...</strong>
-            </div>
-            <div><span style="color: var(--green-neon); font-size: 0.85rem; font-weight: bold;">● CONECTADO</span></div>
+        <div class="sidebar-header">
+            <img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" width="24" alt="Server">
+            <span>Alejo and friends! 👑</span>
         </div>
+        
+        <div class="sidebar-scroll">
+            <a href="#" class="menu-item active"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-gears"></i> Ajustes</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-wand-magic-sparkles"></i> Personalización</a>
 
-        <div class="content-body">
-            <!-- PESTAÑA CONFIGURACIÓN -->
-            <div id="configuracion" class="tab-content active">
-                <h1 style="margin:0 0 10px 0;">Configuración General</h1>
-                <p class="page-desc" style="color:var(--text-muted); margin-bottom:30px;">Cambia las opciones globales del bot en este servidor.</p>
-                <div class="config-box">
-                    <div class="form-group"><label>Prefijo del Bot</label><input type="text" class="form-input" value="/"></div>
-                    <button class="btn-save" onclick="alert('¡Configuración guardada con éxito! 💚')">Guardar Cambios 💚</button>
-                </div>
-            </div>
+            <div class="menu-title"><span>Alertas Sociales</span></div>
+            <a href="#" class="menu-item"><i class="fa-brands fa-instagram"></i> Instagram</a>
+            <a href="#" class="menu-item"><i class="fa-brands fa-twitch"></i> Twitch</a>
+            <a href="#" class="menu-item"><i class="fa-brands fa-youtube"></i> YouTube</a>
+            <a href="#" class="menu-item"><i class="fa-brands fa-x-twitter"></i> X (Twitter)</a>
 
-            <!-- PESTAÑA BIENVENIDAS -->
-            <div id="bienvenidas" class="tab-content">
-                <h1 style="margin:0 0 10px 0;">🚪 Sistema de Bienvenidas</h1>
-                <p style="color:var(--text-muted); margin-bottom:30px;">Personaliza las alertas cuando se une un nuevo usuario.</p>
-                <div class="config-box">
-                    <div class="form-group"><label>Canal de Alertas</label><input type="text" class="form-input" value="#bienvenidas"></div>
-                    <div class="form-group"><label>Mensaje Personalizado</label><input type="text" class="form-input" value="¡Bienvenido/a al servidor! Pasala de diez. 🎉"></div>
-                    <button class="btn-save" onclick="alert('¡Módulo de bienvenidas actualizado! 🚪')">Guardar Módulo 🚪</button>
-                </div>
-            </div>
+            <div class="menu-title"><span>Entretenimiento</span></div>
+            <a href="#" class="menu-item"><i class="fa-solid fa-gamepad"></i> 100 Minijuegos</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-face-laugh-beam"></i> Memes Personalizados</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-music"></i> Música</a>
 
-            <!-- PESTAÑA MÚSICA -->
-            <div id="musica" class="tab-content">
-                <h1 style="margin:0 0 10px 0;">🎶 Ajustes de Música</h1>
-                <div class="config-box">
-                    <div class="form-group"><label>Volumen por defecto</label><select><option>100%</option><option>75%</option><option>50%</option></select></div>
-                    <button class="btn-save" onclick="alert('Música configurada! 🎶')">Guardar Ajustes</button>
-                </div>
-            </div>
-
-            <!-- PESTAÑA JUEGOS -->
-            <div id="juegos" class="tab-content">
-                <h1 style="margin:0 0 10px 0;">🎮 Estado de los 100 Minijuegos</h1>
-                <div class="config-box">
-                    <p>Todos los comandos de juegos tipo combate masivo (`/juego [1-100]`) se encuentran activos actualmente en el servidor.</p>
-                </div>
-            </div>
+            <div class="menu-title"><span>Utilidades</span></div>
+            <a href="#" class="menu-item"><i class="fa-solid fa-user-shield"></i> Autoroles</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-terminal"></i> Comandos Personalizados</a>
         </div>
     </div>
 
-    <script>
-        // Lógica para elegir servidor
-        function seleccionarServidor(nombre, imgUrl) {
-            document.getElementById('navServerName').innerText = nombre;
-            document.getElementById('navServerIcon').src = imgUrl;
-            document.getElementById('serverSelector').style.display = 'none';
-        }
+    <!-- PANEL PRINCIPAL DE GRILLAS -->
+    <div class="main-content">
+        
+        <!-- SECCIÓN: ALERTAS SOCIALES -->
+        <div class="category-section">
+            <div class="category-title">Alertas Sociales 🌐</div>
+            <div class="category-subtitle">Notifica transmisiones y posts en tiempo real.</div>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <span class="badge badge-premium">Premium</span>
+                    <div class="module-icon" style="color: #E1306C;"><i class="fa-brands fa-instagram"></i></div>
+                    <div class="module-name">Instagram</div>
+                    <div class="module-desc">Envía alertas automáticas cuando subas fotos o reels nuevos.</div>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon" style="color: #9146FF;"><i class="fa-brands fa-twitch"></i></div>
+                    <div class="module-name">Twitch</div>
+                    <div class="module-desc">Avisa al instante en tus canales de Discord cuando prendas stream.</div>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon" style="color: #FF0000;"><i class="fa-brands fa-youtube"></i></div>
+                    <div class="module-name">YouTube</div>
+                    <div class="module-desc">Sigue tus canales favoritos y postea los nuevos videos.</div>
+                </div>
+            </div>
+        </div>
 
-        // Lógica para cambiar de pestañas en los botones laterales
-        function cambiarPestaña(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
-        }
-    </script>
+        <!-- SECCIÓN: ENTRETENIMIENTO -->
+        <div class="category-section">
+            <div class="category-title">Entretenimiento & Diversión 🎮</div>
+            <div class="category-subtitle">Módulos interactivos para revivir tus canales de texto y voz.</div>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <span class="badge badge-new">100 Juegos</span>
+                    <div class="module-icon" style="color: #00D2FF;"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="module-name">100 Minijuegos</div>
+                    <div class="module-desc">Trivia, casino, rps, ruleta rusa, economía global y mucho más.</div>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon" style="color: #FFDF00;"><i class="fa-solid fa-face-laugh-beam"></i></div>
+                    <div class="module-name">Memes Personalizados</div>
+                    <div class="module-desc">Generá memes dinámicos con las fotos de perfil de los usuarios.</div>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon" style="color: #1DB954;"><i class="fa-solid fa-music"></i></div>
+                    <div class="module-name">Música Pro</div>
+                    <div class="module-desc">Reproductor de alta fidelidad para canales de voz sin cortes.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: UTILIDADES -->
+        <div class="category-section">
+            <div class="category-title">Configuración & Gestión 🛠️</div>
+            <div class="category-subtitle">Automatizaciones internas para tus moderadores.</div>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon" style="color: #5865F2;"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="module-name">Autoroles</div>
+                    <div class="module-desc">Asigna roles por botones o menús desplegables de forma interactiva.</div>
+                </div>
+                <div class="module-card">
+                    <span class="badge badge-new">Nuevo</span>
+                    <div class="module-icon" style="color: #248046;"><i class="fa-solid fa-terminal"></i></div>
+                    <div class="module-name">Comandos Personalizados</div>
+                    <div class="module-desc">Crea disparadores con respuestas embeds armadas por vos mismo.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </body>
 </html>
