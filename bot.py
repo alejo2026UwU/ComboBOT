@@ -322,7 +322,9 @@ if __name__ == "__main__":
             # Le pasamos los servidores reales al archivo HTML para que los dibuje
             return render_template('server_panel.html', guilds=filtered_guilds)
 
-       def run(): app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
+    def run(): 
+    import os
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
         threading.Thread(target=run).start()
     except ImportError:
         pass
