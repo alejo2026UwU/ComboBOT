@@ -243,7 +243,7 @@ async def crearmeme(interaction: discord.Interaction, plantilla: app_commands.Ch
 
 # EMULADOR DE PUERTO WEB CON OAUTH2 REAL DE DISCORD
 if __name__ == "__main__":
-    token = os.environ.get("TOKEN") or "MTUyNTI4MDQ3OTQ3NjA2MDIxMA.GPadXQ.uUfCRzS6TgR0TmbGteKWyau7b4YRqv0bwWCWck"
+    token = os.environ.get("TOKEN")
     
     try:
         from flask import Flask, render_template, request, redirect, session
