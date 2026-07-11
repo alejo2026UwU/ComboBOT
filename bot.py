@@ -266,19 +266,17 @@ async def autorol(ctx, nombre_rol: str):
     await ctx.send(f"🛠️ **Configuración** | Se mapeó el rol **{nombre_rol}**. Dirigite a la pestaña **Autoroles** en el panel web para diseñar los botones visuales.")
 
 
-# ==============================================================================
-# 4. ENTRADA SEGURA DE MULTIHILO EN SEGUNDO PLANO PARA RENDER
-# ==============================================================================
+# Así tiene que quedar abajo de todo en tu archivo, sin espacios al principio:
 try:
     def run_flask():
-        print("🚀 Iniciando servidor web Flask en puerto asignado...", flush=True)
+        print("🚀 Iniciando servidor web Flask...", flush=True)
         app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)), use_reloader=False)
 
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.daemon = True
     flask_thread.start()
 except Exception as error:
-    print(f"❌ Error crítico en el hilo de Flask: {error}", flush=True)
+    print(f"❌ Error: {error}", flush=True)
 
 # ==============================================================================
 # 5. LANZAMIENTO DEL PROCESO PRINCIPAL
