@@ -65,19 +65,17 @@
     <div class="server-selector-screen" id="serverSelector">
         <h1 style="margin:0;">Selecciona un Servidor 👑</h1>
         <p style="color: var(--text-muted);">Sólo se muestran los servidores donde eres Dueño o Administrador.</p>
-        <div class="server-grid">
-            <div class="server-card" onclick="seleccionarServidor('Mi Servidor Gamer 🚀', 'https://placecats.com/100/100')">
-                <img src="https://placecats.com/100/100" alt="Server 1">
-                <div style="font-weight: bold; margin-bottom:8px;">Mi Servidor Gamer</div>
-                <span class="server-badge">Dueño 👑</span>
-            </div>
-            <div class="server-card" onclick="seleccionarServidor('Comunidad Tech 💻', 'https://placecats.com/120/120')">
-                <img src="https://placecats.com/120/120" alt="Server 2">
-                <div style="font-weight: bold; margin-bottom:8px;">Comunidad Tech</div>
-                <span class="server-badge" style="background:rgba(90,101,242,0.2); color:#5865F2;">Admin 🛠️</span>
-            </div>
-        </div>
+<div class="server-grid">
+    {% for guild in guilds %}
+    <div class="server-card" onclick="seleccionarServidor('{{ guild.name }}', '{{ guild.icon }}')">
+        <img src="{{ guild.icon }}" alt="{{ guild.name }}">
+        <div style="font-weight: bold; margin-bottom:8px;">{{ guild.name }}</div>
+        <span class="server-badge">{{ guild.role }}</span>
     </div>
+    {% else %}
+    <p>No se encontraron servidores donde tengas permisos de Administrador. 😢</p>
+    {% endfor %}
+</div>
 
     <!-- ESTRUCTURA DEL PANEL ORIGINAL -->
     <div class="sidebar">
