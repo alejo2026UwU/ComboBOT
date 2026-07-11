@@ -302,7 +302,6 @@ except Exception as error:
 # ==============================================================================
 # 5. EXECUTE DEL PROCESO PRINCIPAL
 # ==============================================================================
-app.secret_key = os.environ.get("FLASK_SECRET", "cyber_system_ultra_secret_key_2026")
 if not token_servicio:
     print("❌ ERROR DE SISTEMA: Variable 'TOKEN' ausente en el entorno de Render.", flush=True)
 else:
