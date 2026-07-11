@@ -17,14 +17,25 @@ app.secret_key = os.environ.get("FLASK_SECRET", "cyber_system_ultra_secret_key_2
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# CONFIGURACIÓN DE OAUTH2 (Buscá estos datos en el Discord Developer Portal -> OAuth2)
+# ==============================================================================
+# 2. RUTAS DE LA INTERFAZ WEB (SISTEMA OAUTH2 CORREGIDO)
+# ==============================================================================
+import urllib.parse
+
 CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "TU_CLIENT_SECRET_ACÁ")
 REDIRECT_URI = "https://combobot2026.onrender.com/callback"
 
 @app.route('/')
 def home():
-    # URL para que el usuario inicie sesión con su cuenta de Discord
-    login_url = f"https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={requests.utils.quote(REDIRECT_URI)}&response_type=code&scope=identify%20guilds"
+    """Página de inicio limpia que genera el link de Discord sin romperse"""
+    params = {
+        "client_id": CLIENT_ID,
+        "redirect_uri": REDIRECT_URI,
+        "response_type": "code",
+        "scope": "identify guilds"
+    }
+    login_url = f"https://discord.com/oauth2/authorize?{urllib.parse.urlencode(params)}"
+    
     return f'''
     <!DOCTYPE html>
     <html lang="es">
@@ -53,12 +64,11 @@ def home():
 
 @app.route('/callback')
 def callback():
-    """Recibe el código de Discord y pide el token del usuario"""
+    """Recibe el código de Discord de forma segura"""
     code = request.args.get('code')
     if not code:
         return redirect('/')
     
-    # Intercambiamos el código por un token de acceso
     data = {
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
@@ -67,34 +77,31 @@ def callback():
         'redirect_uri': REDIRECT_URI
     }
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    r = requests.post('%s/oauth2/token' % "https://discord.com/api", data=data, headers=headers)
+    r = requests.post("https://discord.com/api/oauth2/token", data=data, headers=headers)
     
     if r.status_code != 200:
-        return "❌ Error al autenticar con Discord.", 400
+        return f"❌ Error de autenticación de Discord (Status: {r.status_code})", 400
         
-    token_json = r.json()
-    session['access_token'] = token_json.get('access_token')
+    session['access_token'] = r.json().get('access_token')
     return redirect('/server_panel.html')
 
 @app.route('/server_panel.html')
 def panel():
-    """Obtiene los servidores reales del usuario y filtra donde es administrador o dueño"""
+    """Muestra el panel dinámico con tus servidores reales"""
     token = session.get('access_token')
     if not token:
         return redirect('/')
         
-    # Pedimos a Discord la lista de servidores del usuario logueado
     headers = {'Authorization': f'Bearer {token}'}
     guilds_res = requests.get("https://discord.com/api/users/@me/guilds", headers=headers)
     
     if guilds_res.status_code != 200:
-        return "❌ No se pudieron cargar tus servidores.", 400
+        return "❌ Error al conectar con tus servidores de Discord.", 400
         
     all_guilds = guilds_res.json()
     filtered_guilds = []
     
     for g in all_guilds:
-        # Filtramos para mostrar solo los servidores donde tiene permisos de Administrador (0x8) o es Dueño
         is_admin = (int(g.get('permissions', 0)) & 0x8) == 0x8
         if g.get('owner') or is_admin:
             filtered_guilds.append({
@@ -106,14 +113,13 @@ def panel():
             
     return render_template('panel.html', guilds=filtered_guilds)
 
-# ACCIÓN REAL PARA EL BOTÓN DE MÚSICA
 @app.route('/api/play', methods=['POST'])
 def web_play():
     data = request.json or {}
     cancion = data.get('track')
     if cancion:
-        print(f"🎵 Comando Web recibido: Reproducir '{cancion}' en Discord.", flush=True)
-        return {"status": "success", "message": f"Reproduciendo {cancion}"}
+        print(f"🎵 Comando Web: Reproducir '{cancion}'", flush=True)
+        return {"status": "success"}
     return {"status": "error"}, 400
 
 @bot.event
