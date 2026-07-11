@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComboBOT — Dashboard 👑</title>
+    <style>
+        :root {
+            --bg-dark: #050811;
+            --bg-sidebar: #090e1a;
+            --bg-card: #0e1526;
+            --bg-input: #131d33;
+            --text-main: #f5f7fa;
+            --text-muted: #7d8da6;
+            --green-neon: #2ecc71;
+            --red-accent: #e74c3c;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; padding: 20px 0; }
+        .bot-brand { padding: 0 25px 20px 25px; font-size: 1.3rem; font-weight: 800; border-bottom: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 15px; }
+        .bot-brand span { color: var(--green-neon); }
+        .menu-section { padding: 10px 25px 5px 25px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; font-weight: bold; }
+        .menu-item { padding: 12px 25px; color: var(--text-main); text-decoration: none; font-size: 0.95rem; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .menu-item:hover, .menu-item.active { background-color: rgba(46, 204, 113, 0.1); color: var(--green-neon); border-left: 4px solid var(--green-neon); padding-left: 21px; }
+        .menu-item.danger-item:hover { background-color: rgba(231, 76, 60, 0.1); color: var(--red-accent); border-left-color: var(--red-accent); }
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .top-nav { background-color: var(--bg-sidebar); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .server-info { display: flex; align-items: center; gap: 12px; }
+        .server-icon { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--green-neon); }
+        .content-body { padding: 40px; max-width: 1000px; }
+        .page-title { margin: 0 0 10px 0; font-size: 1.8rem; }
+        .page-desc { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
+        .config-box { background-color: var(--bg-card); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.03); padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .config-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .config-header h3 { margin: 0; font-size: 1.25rem; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1a263d; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--green-neon); }
+        input:checked + .slider:before { transform: translateX(24px); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+        .form-input, select { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; color: white; font-size: 0.95rem; box-sizing: border-box; outline: none; transition: 0.2s; }
+        .form-input:focus, select:focus { border-color: var(--green-neon); }
+        .btn-save { background-color: var(--green-neon); color: #050811; font-weight: bold; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; }
+        .btn-save:hover { background-color: #27ae60; box-shadow: 0 0 10px rgba(46,204,113,0.3); }
+        .btn-danger-action { background-color: var(--red-accent); color: white; font-weight: bold; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; }
+        .btn-danger-action:hover { background-color: #c0392b; box-shadow: 0 0 10px rgba(231,76,60,0.3); }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="bot-brand">🤖 <span>Combo</span>BOT</div>
+        <div class="menu-section">Módulos Básicos</div>
+        <a href="#" class="menu-item active">⚙️ Configuración</a>
+        <a href="#" class="menu-item">🚪 Bienvenidas</a>
+        <div class="menu-section">Entretenimiento</div>
+        <a href="#" class="menu-item">🎶 Música</a>
+        <a href="#" class="menu-item">🎮 100 Minijuegos</a>
+        <a href="#" class="menu-item">🤡 Creador de Memes</a>
+        <div class="menu-section" style="margin-top:auto;">Ajustes</div>
+        <a href="/" class="menu-item danger-item">⬅️ Salir del Panel</a>
+    </div>
+    <div class="main-wrapper">
+        <div class="top-nav">
+            <div class="server-info">
+                <img class="server-icon" src="https://placecats.com/60/60" alt="Server">
+                <strong>Mi Servidor Gamer 🚀</strong>
+            </div>
+            <div><span style="color: var(--green-neon); font-size: 0.85rem; font-weight: bold;">● CONFIGURANDO</span></div>
+        </div>
+        <div class="content-body">
+            <h1 class="page-title">Configuración del Servidor</h1>
+            <p class="page-desc">Habilita módulos globales, cambia los prefijos y personaliza tu bot.</p>
+            <div class="config-box">
+                <div class="config-header">
+                    <div>
+                        <h3 style="color: white;">⚙️ Panel General</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Apaga o enciende las funciones automáticas.</p>
+                    </div>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="form-group">
+                    <label>Prefijo del Bot</label>
+                    <input type="text" class="form-input" value="/">
+                </div>
+                <div class="form-group">
+                    <label>Idioma del Sistema</label>
+                    <select><option value="es">Español (Latinoamérica)</option><option value="en">English</option></select>
+                </div>
+                <button class="btn-save">Guardar Cambios 💚</button>
+            </div>
+            <div class="config-box" style="border-color: rgba(231, 76, 60, 0.2);">
+                <h3 style="color: var(--red-accent); margin-top: 0;">⚠️ Zona de Peligro</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Estas acciones alteran los registros de la base de datos.</p>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn-danger-action">Limpiar Caché</button>
+                    <button class="btn-danger-action" style="background: transparent; border: 1px solid var(--red-accent); color: var(--red-accent);">Restablecer Todo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
