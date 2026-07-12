@@ -138,11 +138,9 @@ async def on_ready():
     except Exception as e:
         print(f"⚠️ Alerta Wavelink: No se pudo conectar al nodo público ({e}).")
 
-@bot.event
-async def on_guild_join(guild):
-    """Envía un mensaje de bienvenida estético cuando el bot se une a un nuevo servidor"""
-    print(f"📥 ComboBOT se unió al servidor: {guild.name} (ID: {guild.id})", flush=True)
-    
+@bot.listen('on_guild_join')
+async def al_unirse_servidor(guild):
+    print(f"📡 ¡ENTRÓ AL EVENTO! Conectado a: {guild.name}", flush=True)
     # Intenta buscar el canal del sistema (donde llegan los mensajes de bienvenida de Discord)
     channel = guild.system_channel
     
