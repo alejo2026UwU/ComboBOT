@@ -282,7 +282,7 @@ async def on_ready():
         print(f"❌ Error al sincronizar comandos: {e}", flush=True)
     
     try:
-        node = wavelink.Node(uri="http://mi-lavalink.onrender.com", password="youshallnotpass")
+        node = wavelink.Node(uri="https://mi-lavalink.onrender.com", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
         print("🎵 [Wavelink] Nodo de audio premium enlazado.", flush=True)
     except Exception as e:
