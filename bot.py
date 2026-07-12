@@ -71,7 +71,7 @@ JUEGOS_DETALLES = {
     46: {"name": "Cartas Pokémon", "hit": "te atacó con una energía", "crit": "¡usó el ataque de Charizard y te quemó el mazo!"},
     47: {"name": "Clash Royale", "hit": "te tiró un montapuercos", "crit": "¡te tiró un cohete a la torre del rey en el último segundo!"},
     48: {"name": "Trivia GTA 6", "hit": "respondió un dato básico", "crit": "¡filtró el mapa entero del juego con sus respuestas!"},
-    49: {"name": "Guitar Hero", "hit": "metió una racha de 50 notas", "crit": "¡tocó Through the Fire and Flames al 100% de precisión!"},
+    49: {"name": "Guitar Hero", "hit": "metió un racha de 50 notas", "crit": "¡tocó Through the Fire and Flames al 100% de precisión!"},
     50: {"name": "Baile Fortnite", "hit": "tiró unos pasos de baile", "crit": "¡te tiró el Take the L en la cara después de lofearte!"},
     51: {"name": "Tetris Blitz", "hit": "limpió dos líneas juntas", "crit": "¡te mandó 4 líneas limpias metiendo un Tetris perfecto!"},
     52: {"name": "Pacman Racha", "hit": "se comió una bolita de poder", "crit": "¡se comió a los 4 fantasmas acorralándote en el pasillo!"},
@@ -122,7 +122,7 @@ JUEGOS_DETALLES = {
     97: {"name": "Guerra de Memes", "hit": "te mandó un sticker gracioso", "crit": "¡te mandó un meme tan potente que mató de risa al grupo!"},
     98: {"name": "Lanzar el Tejo", "hit": "dejó el disco cerca del centro", "crit": "¡metió el tejo directo en la ranura sumando el triple!"},
     99: {"name": "Búsqueda del Tesoro", "hit": "encontró una pista vieja", "crit": "¡abrió el cofre lleno de lingotes de oro pirata!"},
-   100: {"name": "Último Sobreviviente", "hit": "se curó con un vendaje", "crit": "¡te metió un headshot ganando la partida definitiva!"}
+   100: {"name": "Última Sobreviviente", "hit": "se curó con un vendaje", "crit": "¡te metió un headshot ganando la partida definitiva!"}
 }
 
 # ==============================================================================
@@ -274,10 +274,10 @@ class JuegoMasivoView(discord.ui.View):
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
     
-    # 🔥 CONFIGURACIÓN DE TU PRESENCIA PERSONALIZADA 🔥
+    # 🔥 CONFIGURACIÓN DE TU PRESENCIA EN MODO WATCHING CON PROMO ACTIVA 🔥
     activity = discord.Activity(
         type=discord.ActivityType.watching, 
-        name="Welcome, ComboBOT | invita a ComboBOT!!"
+        name="¡ComboBOT Premium! 🚀 | /help_cyber 🛸"
     )
     await bot.change_presence(activity=activity)
     
@@ -300,9 +300,6 @@ async def on_guild_join(guild):
     if not channel: 
         return
 
-    # Cargamos el archivo de imagen adjunto desde la raíz
-    file = discord.File("logo_discordbot.png", filename="logo_discordbot.png")
-
     embed = discord.Embed(
         title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!!", 
         description=(
@@ -315,7 +312,8 @@ async def on_guild_join(guild):
         color=discord.Color.from_rgb(0, 240, 255)
     )
     
-    embed.set_thumbnail(url="attachment://logo_discordbot.png")
+    # 🖼️ Imagen directo desde internet (Brave link corregido sin archivos locales)
+    embed.set_thumbnail(url="https://imgs.search.brave.com/76aZ7hkV1PPVrRyXaVnQMoZPLmkS53ropoOljJO1OJ4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzdhLzBi/LzkxLzdhMGI5MWZi/M2Y3OGU4MTg0Mzg0/MDQ5NWQ4ZWQ4YmM2/LmpwZw")
     
     embed.add_field(
         name="🎵 Música Premium", 
@@ -347,12 +345,11 @@ async def on_guild_join(guild):
     
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
 
-    await channel.send(file=file, embed=embed)
+    await channel.send(embed=embed)
     
 # --- MENU CENTRAL DE AYUDA DE BARRA UNIFICADO ---
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot")
 async def help_cyber_slash(interaction: discord.Interaction):
-    # Usamos la misma estructura de texto pero respondiendo directamente al comando de barra
     embed = discord.Embed(
         title="🛸 Central de Comandos — ComboBOT", 
         description=(
