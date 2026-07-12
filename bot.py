@@ -273,7 +273,13 @@ class JuegoMasivoView(discord.ui.View):
 @bot.event
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
-    await bot.change_presence(activity=discord.Game(name="¡Música y Juegos! 🔥 | /help_cyber"))
+    
+    # 🔥 CONFIGURACIÓN DE TU PRESENCIA PERSONALIZADA 🔥
+    activity = discord.Activity(
+        type=discord.ActivityType.watching, 
+        name="Welcome, ComboBOT | invita a ComboBOT!!"
+    )
+    await bot.change_presence(activity=activity)
     
     try:
         synced = await bot.tree.sync()
