@@ -123,12 +123,19 @@ def web_play():
     return {"status": "error"}, 400
 
 # ==============================================================================
-# 3. EVENTOS Y COMANDOS PRINCIPALES DEL BOT
+# 3. EVENTOS Y COMANDOS PRINCIPALES DEL BOT (CON SLASH COMMANDS)
 # ==============================================================================
 @bot.event
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
-    await bot.change_presence(activity=discord.Game(name="!help_cyber | !arcade 🎮"))
+    await bot.change_presence(activity=discord.Game(name="¡Instalame! 🛸 | /arcade"))
+    
+    # Sincronización global obligatoria de los comandos /
+    try:
+        synced = await bot.tree.sync()
+        print(f"🌌 ¡Sincronización exitosa! {len(synced)} comandos de barra listos.", flush=True)
+    except Exception as e:
+        print(f"❌ Error al sincronizar los comandos de barra: {e}", flush=True)
     
     # Inicialización real del nodo de música Wavelink
     try:
@@ -141,10 +148,8 @@ async def on_ready():
 @bot.listen('on_guild_join')
 async def al_unirse_servidor(guild):
     print(f"📡 ¡ENTRÓ AL EVENTO! Conectado a: {guild.name}", flush=True)
-    # Intenta buscar el canal del sistema (donde llegan los mensajes de bienvenida de Discord)
     channel = guild.system_channel
     
-    # Si no hay canal del sistema, busca el primer canal de texto donde pueda escribir
     if not channel:
         channel = next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
     
@@ -160,13 +165,13 @@ async def al_unirse_servidor(guild):
     
     embed.add_field(
         name="🌌 Características Principales",
-        value="• **Modo Arcade:** ¡Más de 100 modos de juego interactivos!\n• **Música Premium:** Audio de alta fidelidad vía Wavelink sin cortes.\n• **Alertas:** Automatización de notificaciones para tus redes sociales.\n• **Imágenes:** Personalización avanzada con comandos.",
+        value="• **Modo Arcade:** ¡Comandos individuales de juego interactivos con /!\n• **Música Premium:** Audio de alta fidelidad vía Wavelink sin cortes.\n• **Alertas:** Automatización de notificaciones para tus redes sociales.\n• **Imágenes:** Personalización avanzada con comandos.",
         inline=False
     )
     
     embed.add_field(
         name="💻 Comandos Básicos",
-        value="• `!play` - Reproduce tu música favorita.\n• `!arcade` - Entra al menú de minijuegos.",
+        value="• `!play` - Reproduce tu música favorita.\n• `/arcade` - Entra al menú informativo de minijuegos.",
         inline=False
     )
     
@@ -190,10 +195,10 @@ async def help_cyber(ctx):
     """Muestra el panel de comandos con tu propia identidad de marca"""
     embed = discord.Embed(
         title="⚡ CyberBot Comando Central ⚡",
-        description="Prefijo activo: `!` para ejecutar acciones en la terminal.",
+        description="Prefijo activo: `!` para comandos de texto tradicionales. ¡Usá `/` para los minijuegos!",
         color=discord.Color.from_rgb(0, 240, 255)
     )
-    embed.add_field(name="🎮 Sistema Arcade & Economía", value="`!mine`, `!hack`, `!cyber_roulette`, `!cyber_jack`, `!cyber_perfil`, `!arcade`", inline=False)
+    embed.add_field(name="🎮 Sistema Arcade & Economía (Slash)", value="`/mine`, `/hack`, `/cyber_roulette`, `/cyber_jack`, `/cyber_perfil`, `/arcade`", inline=False)
     embed.add_field(name="📸 Personalización de Visuales", value="`!cyber_meme [texto]`, `!avatar_meme [@user] [texto]`", inline=False)
     embed.add_field(name="🌐 feeds de Redes", value="`!twitch [canal]`, `!youtube [canal]`, `!instagram [cuenta]`", inline=False)
     embed.add_field(name="🔊 Transmisión Wavelink", value="`!play [pista]`, `!autorol [rol]`", inline=False)
@@ -239,63 +244,57 @@ async def avatar_meme(ctx, usuario: discord.Member = None, *, texto: str = "Esca
     await ctx.send(embed=embed)
 
 
-# --- 100 MINIJUEGOS TOTALMENTE ORIGINALES (SISTEMA ARCADE) ---
-@bot.command(name="arcade")
-async def arcade_lista(ctx):
-    """Comando base informativo del sector de minijuegos"""
-    await ctx.send("🕹️ **Sección Arcade de Alta Densidad (100 juegos en desarrollo):**\nGenerá tus dividendos ejecutando: `!mine`, `!hack`, `!cyber_roulette` y `!cyber_jack`.")
+# --- MINIJUEGOS TOTALMENTE INDEPENDIENTES (SISTEMA SLASH COMMANDS /) ---
+@bot.tree.command(name="arcade", description="Muestra la información del sector de minijuegos")
+async def arcade_lista(interaction: discord.Interaction):
+    await interaction.response.send_message("🕹️ **Sección Arcade de Alta Densidad (100 juegos en desarrollo):**\nGenerá tus dividendos ejecutando de forma directa: `/mine`, `/hack`, `/cyber_roulette` y `/cyber_jack`.")
 
-@bot.command(name="mine")
-async def mine(ctx):
-    """Minería de datos espacial (Sustituto original de work)"""
+@bot.tree.command(name="mine", description="Minería de datos espacial (Obtené StarChips)")
+async def mine(interaction: discord.Interaction):
     recompensa = random.randint(120, 550)
     minas = ["Asteroides de Helio-3 🌌", "Servidores encriptados 💾", "Criptomonedas perdidas 🪙", "Microchips reciclados 🛠️"]
     lugar = random.choice(minas)
-    await ctx.send(f"🌌 **{ctx.author.name}** minó con éxito en *{lugar}* y extrajo **{recompensa} StarChips**.")
+    await interaction.response.send_message(f"🌌 **{interaction.user.name}** minó con éxito en *{lugar}* y extrajo **{recompensa} StarChips**.")
 
-@bot.command(name="hack")
-async def hack(ctx):
-    """Ataque cibernético de riesgo (Sustituto original de crime)"""
+@bot.tree.command(name="hack", description="Ataque cibernético de riesgo")
+async def hack(interaction: discord.Interaction):
     exito = random.choice([True, False])
     recompensa = random.randint(350, 950)
     if exito:
-        await ctx.send(f"🥷 **{ctx.author.name}** vulneró el firewall de la red central y extrajo **{recompensa} StarChips** sin dejar rastro. 💻")
+        await interaction.response.send_message(f"🥷 **{interaction.user.name}** vulneró el firewall de la red central y extrajo **{recompensa} StarChips** sin dejar rastro. 💻")
     else:
-        await ctx.send(f"🚨 ¡Contramedidas activadas! La ciberseguridad interceptó el ataque de **{ctx.author.name}**. Penalización de **{recompensa // 2} AstroCoins** de fianza.")
+        await interaction.response.send_message(f"🚨 ¡Contramedidas activadas! La ciberseguridad interceptó el ataque de **{interaction.user.name}**. Penalización de **{recompensa // 2} AstroCoins** de fianza.")
 
-@bot.command(name="cyber_roulette")
-async def cyber_roulette(ctx, apuesta: int = 200):
-    """Mesa de azar cuántico"""
+@bot.tree.command(name="cyber_roulette", description="Mesa de azar cuántico en la ruleta neón")
+async def cyber_roulette(interaction: discord.Interaction, apuesta: int = 200):
     if apuesta <= 0:
-        return await ctx.send("❌ ¡Ingresá un valor por encima de cero, chip de red no válido!")
+        return await interaction.response.send_message("❌ ¡Ingresá un valor por encima de cero, chip de red no válido!")
     
     evento = random.choice(["gana", "pierde", "critico"])
     if evento == "gana":
-        await ctx.send(f"🎰 **{ctx.author.name}** apostó {apuesta} en el sector neón y ganó **{apuesta * 2} StarChips**.")
+        await interaction.response.send_message(f"🎰 **{interaction.user.name}** apostó {apuesta} en el sector neón y ganó **{apuesta * 2} StarChips**.")
     elif evento == "critico":
-        await ctx.send(f"💥 **¡SOBRECARGA DE RENDIMIENTO!** Multiplicador de vector activado. ¡Te llevás **{apuesta * 3} StarChips**! 🚀")
+        await interaction.response.send_message(f"💥 **¡SOBRECARGA DE RENDIMIENTO!** Multiplicador de vector activado. ¡Te llevás **{apuesta * 3} StarChips**! 🚀")
     else:
-        await ctx.send(f"📉 La ruleta cayó en zona muerta. Perdiste tus **{apuesta} StarChips** de la cuenta.")
+        await interaction.response.send_message(f"📉 La ruleta cayó en zona muerta. Perdiste tus **{apuesta} StarChips** de la cuenta.")
 
-@bot.command(name="cyber_jack")
-async def cyber_jack(ctx, apuesta: int = 150):
-    """Blackjack tematizado con IA"""
+@bot.tree.command(name="cyber_jack", description="Jugá al Blackjack contra nuestra IA avanzada")
+async def cyber_jack(interaction: discord.Interaction, apuesta: int = 150):
     user_score = random.randint(13, 21)
     cpu_score = random.randint(15, 21)
     
     if user_score > 21:
-        await ctx.send(f"🃏 **CyberJack** | Tu procesador se recalentó con {user_score} puntos. Perdiste **{apuesta} StarChips**.")
+        await interaction.response.send_message(f"🃏 **CyberJack** | Tu procesador se recalentó con {user_score} puntos. Perdiste **{apuesta} StarChips**.")
     elif cpu_score > 21 or user_score > cpu_score:
-        await ctx.send(f"🃏 **CyberJack** | ¡Victoria de red! Tu puntaje ({user_score}) superó al del bot ({cpu_score}). ¡+{apuesta} StarChips! 🏆")
+        await interaction.response.send_message(f"🃏 **CyberJack** | ¡Victoria de red! Tu puntaje ({user_score}) superó al del bot ({cpu_score}). ¡+{apuesta} StarChips! 🏆")
     elif user_score == cpu_score:
-        await ctx.send(f"🃏 **CyberJack** | Sincronización exacta en {user_score} puntos. Empate técnico.")
+        await interaction.response.send_message(f"🃏 **CyberJack** | Sincronización exacta en {user_score} puntos. Empate técnico.")
     else:
-        await ctx.send(f"🃏 **CyberJack** | La IA se plantó con {cpu_score} puntos superando tus {user_score}. Perdiste **{apuesta} StarChips**.")
+        await interaction.response.send_message(f"🃏 **CyberJack** | La IA se plantó con {cpu_score} puntos superando tus {user_score}. Perdiste **{apuesta} StarChips**.")
 
-@bot.command(name="cyber_perfil")
-async def cyber_perfil(ctx, usuario: discord.Member = None):
-    """Muestra la base de datos de usuario con estética original Cyberpunk"""
-    usuario = usuario or ctx.author
+@bot.tree.command(name="cyber_perfil", description="Muestra la base de datos y estadísticas globales del usuario")
+async def cyber_perfil(interaction: discord.Interaction, usuario: discord.Member = None):
+    usuario = usuario or interaction.user
     embed = discord.Embed(
         title=f"⚡ Registro Cyber-ID: {usuario.name} ⚡",
         description="Ficha técnica de credenciales económicas globales del servidor.",
@@ -305,7 +304,7 @@ async def cyber_perfil(ctx, usuario: discord.Member = None):
     embed.add_field(name="⭐ Nivel de Conexión", value=f"Rango {random.randint(1, 100)}", inline=True)
     embed.add_field(name="🎒 Hardware Equipado", value="`💾 SSD Cuántico`, `🕶️ Visor AR Avanzado`, `🎟️ Kernel VIP Premium`", inline=False)
     embed.set_thumbnail(url=usuario.avatar.url if usuario.avatar else usuario.default_avatar.url)
-    await ctx.send(embed=embed)
+    await interaction.response.send_message(embed=embed)
 
 
 # --- TRANSMISIONES DE REDES INDEPENDIENTES ---
