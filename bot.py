@@ -288,8 +288,8 @@ async def on_ready():
     except Exception as e:
         print(f"⚠️ Alerta Wavelink: {e}")
 
-@bot.tree.command(name="help_cyber", description="Muestra el menú de ayuda del bot.")
-async def help_cyber(interaction: discord.Interaction):
+@bot.tree.command(name="help_combo", description="Muestra la central de comandos del bot")
+async def help_combo(interaction: discord.Interaction):
     embed = discord.Embed(
         title="🛸 ¡¡Bienvenido y Gracias por usar ComboBOT!!", 
         description=(
