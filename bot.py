@@ -251,7 +251,8 @@ class JuegoMasivoView(discord.ui.View):
         txt = f"⚔️ {self.turno.mention} {self.hit_txt} a {self.rival.mention} haciendo `{dmg} DMG`."
         if self.hp[self.rival.id] > 0: 
             self.turno, self.rival = self.rival, self.turno
-        await self.actualizar(inter, txt)
+        await self.actualizar(inter, txt)}
+
 
     @discord.ui.button(label="⚡ Golpe Arriesgado", style=discord.ButtonStyle.danger)
     async def crit_btn(self, inter, btn):
