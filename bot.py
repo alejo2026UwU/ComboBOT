@@ -216,7 +216,7 @@ def panel():
 
 # ==============================================================================
 # 3. CLASES DE VISTA INTERACTIVA (SISTEMA DE BOTONES 1V1)
-# ==============================================================================
+# ==============================================================================File "/opt/render/project/src/bot.py", line 254
 class JuegoMasivoView(discord.ui.View):
     def __init__(self, j1, j2, numero, config):
         super().__init__(timeout=90)
@@ -251,8 +251,7 @@ class JuegoMasivoView(discord.ui.View):
         txt = f"⚔️ {self.turno.mention} {self.hit_txt} a {self.rival.mention} haciendo `{dmg} DMG`."
         if self.hp[self.rival.id] > 0: 
             self.turno, self.rival = self.rival, self.turno
-        await self.actualizar(inter, txt)}
-
+        await self.actualizar(inter, txt)
 
     @discord.ui.button(label="⚡ Golpe Arriesgado", style=discord.ButtonStyle.danger)
     async def crit_btn(self, inter, btn):
@@ -266,7 +265,7 @@ class JuegoMasivoView(discord.ui.View):
             txt = f"💨 {self.turno.mention} intentó una jugada arriesgada en **{self.nombre}** pero la manqueó feo."
         if self.hp[self.rival.id] > 0: 
             self.turno, self.rival = self.rival, self.turno
-        await self.actualizar(inter, txt)}
+        await self.actualizar(inter, txt)
         
 # ==============================================================================
 # 4. EVENTOS Y COMANDOS DE BARRA (SLASH COMMANDS COMPLETOS)
