@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alejo's CyberBot Hub 🚀</title>
+    <style>
+        body {
+            background-color: #0a0914;
+            color: #FFFFFF;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .panel-container {
+            max-width: 600px;
+            padding: 40px;
+            background: #0f0d22;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+            border: 1px solid #1f1b40;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: #00f0ff; }
+        p { color: #6c6985; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; }
+        .login-btn {
+            background: linear-gradient(135deg, #00f0ff 0%, #39ff14 100%);
+            color: #0a0914;
+            padding: 16px 35px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+            cursor: pointer;
+        }
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(57, 255, 20, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel-container">
+        <h1>🛸 Alejo's CyberBot Central</h1>
+        <p>Sincronización total en la nube: 100 modos Arcade, alertas automatizadas de redes, audio de alta fidelidad vía Wavelink y personalización de imágenes mediante comandos.</p>
+        <button onclick="loginDiscord()" class="login-btn">🔑 Iniciar Sesión con Discord</button>
+    </div>
+
+    <script>
+        function loginDiscord() {
+            const CLIENT_ID = "1525280479476060210"; // Tu ID real de Discord
+            // Tu nueva URL de GitHub Pages para volver al panel después de loguearte
+            const REDIRECT_URI = window.location.origin + window.location.pathname.replace('index.html', '') + 'panel.html';
+            
+            const url = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify%20guilds`;
+            
+            window.location.href = url;
+        }
+    </script>
+
+</body>
+</html>
