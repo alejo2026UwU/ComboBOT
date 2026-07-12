@@ -288,14 +288,10 @@ async def on_ready():
     except Exception as e:
         print(f"⚠️ Alerta Wavelink: {e}")
 
-@bot.event
-async def on_guild_join(guild):
-    channel = guild.system_channel or next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
-    if not channel: 
-        return
-
+@bot.tree.command(name="help_cyber", description="Muestra el menú de ayuda del bot.")
+async def help_cyber(interaction: discord.Interaction):
     embed = discord.Embed(
-        title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!!", 
+        title="🛸 ¡¡Bienvenido y Gracias por usar ComboBOT!!", 
         description=(
             "Sincronización total en la nube y entretenimiento puro para tu comunidad. 🚀✨\n\n"
             "ComboBOT está diseñado para darle vida a tu servidor de Discord con un sistema híbrido "
@@ -329,15 +325,15 @@ async def on_guild_join(guild):
         value=(
             "• `/play` - Reproduce música en tu canal de voz. 🎧\n"
             "• `/juego` - Explora y arranca los desafíos interactivos. 🥊\n"
-            "• `/help_cyber` - Muestra la lista completa de comandos disponibles. 🤖"
+            "• `/help_cyber` - Muestra este menú de ayuda disponible. 🤖"
         ),
         inline=False
     )
     
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
 
-    await channel.send(embed=embed)
-
+    await interaction.response.send_message(embed=embed)
+    
 # --- COMANDOS MIGRADOS A '/' ---
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot")
 async def help_cyber_slash(interaction: discord.Interaction):
