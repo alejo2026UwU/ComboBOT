@@ -266,7 +266,7 @@ class JuegoMasivoView(discord.ui.View):
             txt = f"💨 {self.turno.mention} intentó una jugada arriesgada en **{self.nombre}** pero la manqueó feo."
         if self.hp[self.rival.id] > 0: 
             self.turno, self.rival = self.rival, self.turno
-        await self.actualizar(inter, txt)
+        await self.actualizar(inter, txt)}
         
 # ==============================================================================
 # 4. EVENTOS Y COMANDOS DE BARRA (SLASH COMMANDS COMPLETOS)
