@@ -288,15 +288,55 @@ async def on_ready():
     except Exception as e:
         print(f"⚠️ Alerta Wavelink: {e}")
 
-@bot.tree.command(name="help_cyber")
-async def al_unirse_servidor(guild):
+@bot.event
+async def on_guild_join(guild):
     channel = guild.system_channel or next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
-    if not channel: return
+    if not channel: 
+        return
 
-    embed = discord.Embed(title="🛸 ¡Bienvenido a ComboBOT!", description="Suite completa de música premium y minijuegos con barra.", color=discord.Color.from_rgb(0, 240, 255))
-    embed.add_field(name="🎮 Comandos de Barra Disponibles", value="• `/juego` - Desafíos interactivos multijugador.\n• `/play` - Reproducción de música de alta fidelidad vía Wavelink.\n• `/help_cyber` - Menú de ayuda técnica.")
+    embed = discord.Embed(
+        title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!!", 
+        description=(
+            "Sincronización total en la nube y entretenimiento puro para tu comunidad. 🚀✨\n\n"
+            "ComboBOT está diseñado para darle vida a tu servidor de Discord con un sistema híbrido "
+            "avanzado, combinando potencia musical y diversión interactiva en un solo lugar. "
+            "Olvidate de las configuraciones complejas en páginas web: ahora todo se maneja de forma "
+            "instantánea e intuitiva directamente desde el chat usando la tecnología nativa de Discord. 🤖"
+        ), 
+        color=discord.Color.from_rgb(0, 240, 255)
+    )
+    
+    embed.add_field(
+        name="🎵 Música Premium", 
+        value="• Audio de alta fidelidad y estabilidad absoluta vía Wavelink sin cortes. Disfrutá de tus canciones y playlists favoritas.",
+        inline=False
+    )
+
+    embed.add_field(
+        name="🕹️ Sistema de Juegos", 
+        value="• Desafíos interactivos y modos competitivos multijugador directamente en el chat para divertirte con tus amigos.",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="🖼️ Edición de Imágenes", 
+        value="• Personalización avanzada, creación de memes y edición multimedia con comandos rápidos.",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="💻 Comandos de Barra Básicos (Slash Commands)", 
+        value=(
+            "• `/play` - Reproduce música en tu canal de voz. 🎧\n"
+            "• `/juego` - Explora y arranca los desafíos interactivos. 🥊\n"
+            "• `/help_cyber` - Muestra la lista completa de comandos disponibles. 🤖"
+        ),
+        inline=False
+    )
+    
+    embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
+
     await channel.send(embed=embed)
-
 
 # --- COMANDOS MIGRADOS A '/' ---
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot")
