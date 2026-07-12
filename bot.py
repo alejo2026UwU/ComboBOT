@@ -288,7 +288,7 @@ async def on_ready():
     except Exception as e:
         print(f"⚠️ Alerta Wavelink: {e}")
 
-@bot.listen('on_guild_join')
+@bot.tree.command(name="help_cyber")
 async def al_unirse_servidor(guild):
     channel = guild.system_channel or next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
     if not channel: return
