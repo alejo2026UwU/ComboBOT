@@ -6,6 +6,7 @@ import requests
 import discord
 from discord.ext import commands
 import wavelink
+import urllib.parse
 
 # ==============================================================================
 # 1. CONFIGURACIÓN COMPLETA DE FLASK & CYBER DISCORD BOT
@@ -17,14 +18,13 @@ app.secret_key = os.environ.get("FLASK_SECRET", "cyber_system_ultra_secret_key_2
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# ==============================================================================
-# 2. RUTAS DE LA INTERFAZ WEB (SISTEMA OAUTH2 CORREGIDO)
-# ==============================================================================
-import urllib.parse
-
+CLIENT_ID = "1525280479476060210" # Tu ID de cliente real de Discord
 CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "TU_CLIENT_SECRET_ACÁ")
 REDIRECT_URI = "https://combobot2026.onrender.com/callback"
 
+# ==============================================================================
+# 2. RUTAS DE LA INTERFAZ WEB (SISTEMA OAUTH2 CORREGIDO)
+# ==============================================================================
 @app.route('/')
 def home():
     """Página de inicio limpia que genera el link de Discord sin romperse"""
@@ -122,6 +122,9 @@ def web_play():
         return {"status": "success"}
     return {"status": "error"}, 400
 
+# ==============================================================================
+# 3. EVENTOS Y COMANDOS PRINCIPALES DEL BOT
+# ==============================================================================
 @bot.event
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
@@ -134,6 +137,45 @@ async def on_ready():
         print("🎵 [Wavelink] Nodo de audio enlazado con éxito global.", flush=True)
     except Exception as e:
         print(f"⚠️ Alerta Wavelink: No se pudo conectar al nodo público ({e}).")
+
+@bot.event
+async def on_guild_join(guild):
+    """Envía un mensaje de bienvenida estético cuando el bot se une a un nuevo servidor"""
+    channel = next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
+    
+    if channel is None:
+        return
+
+    embed = discord.Embed(
+        title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!!",
+        description="Sincronización total en la nube y entretenimiento para tu servidor. 🚀✨",
+        color=discord.Color.from_rgb(0, 240, 255)
+    )
+    
+    embed.add_field(
+        name="🌌 Características Principales",
+        value="• **Modo Arcade:** ¡Más de 100 modos de juego interactivos!\n• **Música Premium:** Audio de alta fidelidad vía Wavelink sin cortes.\n• **Alertas:** Automatización de notificaciones para tus redes sociales.\n• **Imágenes:** Personalización avanzada con comandos.",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="💻 Comandos Básicos",
+        value="• `!play` - Reproduce tu música favorita.\n• `!arcade` - Entra al menú de minijuegos.",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="🔗 Enlaces Útiles",
+        value="[Panel de Control Web](https://alejo2026UwU.github.io/panel.html)",
+        inline=False
+    )
+    
+    embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
+
+    try:
+        await channel.send(embed=embed)
+    except Exception as e:
+        print(f"No se pudo mandar el mensaje de bienvenida: {e}")
 
 # --- MENÚ DE AYUDA ORIGINAL ---
 @bot.command(name="help_cyber")
