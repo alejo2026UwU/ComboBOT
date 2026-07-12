@@ -242,28 +242,31 @@ class JuegoMasivoView(discord.ui.View):
         else:
             await inter.response.edit_message(embed=embed, view=self)
 
-  @discord.ui.button(label="💥 Atacar Seguro", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="💥 Atacar Seguro", style=discord.ButtonStyle.primary)
     async def hit_btn(self, inter, btn):
-        if inter.user.id != self.turno.id: return
+        if inter.user.id != self.turno.id: 
+            return
         dmg = random.randint(10, 20)
         self.hp[self.rival.id] -= dmg
         txt = f"⚔️ {self.turno.mention} {self.hit_txt} a {self.rival.mention} haciendo `{dmg} DMG`."
-        if self.hp[self.rival.id] > 0: self.turno, self.rival = self.rival, self.turno
+        if self.hp[self.rival.id] > 0: 
+            self.turno, self.rival = self.rival, self.turno
         await self.actualizar(inter, txt)
 
-   @discord.ui.button(label="⚡ Golpe Arriesgado", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="⚡ Golpe Arriesgado", style=discord.ButtonStyle.danger)
     async def crit_btn(self, inter, btn):
-        if inter.user.id != self.turno.id: return
+        if inter.user.id != self.turno.id: 
+            return
         if random.randint(1, 2) == 1:
             dmg = random.randint(25, 50)
             self.hp[self.rival.id] -= dmg
             txt = f"🔥💥 {self.turno.mention} {self.crit_txt} contra {self.rival.mention} quitando `{dmg} DMG`!"
         else:
             txt = f"💨 {self.turno.mention} intentó una jugada arriesgada en **{self.nombre}** pero la manqueó feo."
-        if self.hp[self.rival.id] > 0: self.turno, self.rival = self.rival, self.turno
-        await self.actualizar(inter, txt)
-
-
+        if self.hp[self.rival.id] > 0: 
+            self.turno, self.rival = self.rival, self.turno
+        await self.actualizar(inter, txt)}
+        
 # ==============================================================================
 # 4. EVENTOS Y COMANDOS DE BARRA (SLASH COMMANDS COMPLETOS)
 # ==============================================================================
