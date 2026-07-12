@@ -294,6 +294,9 @@ async def on_guild_join(guild):
     if not channel: 
         return
 
+    # Cargamos el archivo usando el nombre exacto de tu GitHub
+    file = discord.File("logo_discordbot.png", filename="logo_discordbot.png")
+
     embed = discord.Embed(
         title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!!", 
         description=(
@@ -305,6 +308,9 @@ async def on_guild_join(guild):
         ), 
         color=discord.Color.from_rgb(0, 240, 255)
     )
+    
+    # Vinculamos el adjunto usando el nuevo nombre
+    embed.set_thumbnail(url="attachment://logo_discordbot.png")
     
     embed.add_field(
         name="🎵 Música Premium", 
@@ -336,7 +342,8 @@ async def on_guild_join(guild):
     
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
 
-    await channel.send(embed=embed)
+    # Enviamos el archivo junto con el embed
+    await channel.send(file=file, embed=embed)
     
 # --- COMANDOS MIGRADOS A '/' ---
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot")
