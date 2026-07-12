@@ -112,7 +112,7 @@ JUEGOS_DETALLES = {
     87: {"name": "Aliens vs Depredador", "hit": "te disparó con el cañón de hombro", "crit": "¡te atravesó con las garras ocultas desde los árboles!"},
     88: {"name": "Viaje en el Tiempo", "hit": "viajó un par de días atrás", "crit": "¡alteró la línea temporal y borró a tus ancestros!"},
     89: {"name": "Agua en el Desierto", "hit": "encontró un pozo seco", "crit": "¡descubrió un oasis paradisíaco con agua helada!"},
-    90: {"name": "Planta Mutante", "hit": "su semilla brotó un poquito", "crit": "¡su planta creció hasta las nubes y se comió tu casa!"},
+    90: {"name": "Planta Mutante", "hit": "su semilla brotó un poquito", "crit": "¡su planta creció hasta las nubes y se comió tu house!"},
     91: {"name": "Invasión Extraterrestre", "hit": "te apuntó con un rayo láser", "crit": "¡te abdujo adentro del plato volador para estudiarte!"},
     92: {"name": "Escape de Prisión", "hit": "limó los barrotes de la celda", "crit": "¡escapó por el túnel cavado atrás del póster!"},
     93: {"name": "Física Cuántica", "hit": "resolvió una ecuación simple", "crit": "¡abrió un agujero de gusano en el living de su casa!"},
@@ -215,8 +215,8 @@ def panel():
 
 
 # ==============================================================================
-# 3. CLASES DE VISTA INTERACTIVA (SISTEMA DE BOTONES 1V1)
-# ==============================================================================File "/opt/render/project/src/bot.py", line 254
+# 3. CLASES DE VISTA INTERACTIVE (SISTEMA DE BOTONES 1V1)
+# ==============================================================================
 class JuegoMasivoView(discord.ui.View):
     def __init__(self, j1, j2, numero, config):
         super().__init__(timeout=90)
@@ -294,13 +294,13 @@ async def on_guild_join(guild):
     if not channel: 
         return
 
-    # Cargamos el archivo usando el nombre exacto de tu GitHub
+    # Cargamos el archivo de imagen adjunto desde la raíz
     file = discord.File("logo_discordbot.png", filename="logo_discordbot.png")
 
     embed = discord.Embed(
         title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!!", 
         description=(
-            "Sincronización total en la nube y entretenimiento puro para tu comunidad. 🚀✨\n\n"
+            "Sincronización total en la nube y entertainment puro para tu comunidad. 🚀✨\n\n"
             "ComboBOT está diseñado para darle vida a tu servidor de Discord con un sistema híbrido "
             "avanzado, combinando potencia musical y diversión interactiva en un solo lugar. "
             "Olvidate de las configuraciones complejas en páginas web: ahora todo se maneja de forma "
@@ -309,7 +309,6 @@ async def on_guild_join(guild):
         color=discord.Color.from_rgb(0, 240, 255)
     )
     
-    # Vinculamos el adjunto usando el nuevo nombre
     embed.set_thumbnail(url="attachment://logo_discordbot.png")
     
     embed.add_field(
@@ -342,15 +341,28 @@ async def on_guild_join(guild):
     
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
 
-    # Enviamos el archivo junto con el embed
     await channel.send(file=file, embed=embed)
     
-# --- COMANDOS MIGRADOS A '/' ---
+# --- MENU CENTRAL DE AYUDA DE BARRA UNIFICADO ---
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot")
 async def help_cyber_slash(interaction: discord.Interaction):
-    embed = discord.Embed(title="⚡ CyberBot Comando Central ⚡", description="¡Todos los comandos fueron actualizados al sistema nativo `/`!", color=discord.Color.from_rgb(0, 240, 255))
-    embed.add_field(name="🔊 Música Premium (Slash)", value="`/play [canción]`, `/stop`, `/skip`", inline=False)
-    embed.add_field(name="🎮 Juegos Multijugador (Slash)", value="`/juego [1-100] [@rival]`, `/mine`, `/hack`, `/cyber_roulette`", inline=False)
+    # Usamos la misma estructura de texto pero respondiendo directamente al comando de barra
+    embed = discord.Embed(
+        title="🛸 Central de Comandos — ComboBOT", 
+        description=(
+            "¡Todos los comandos fueron actualizados al sistema nativo `/`! 🚀✨\n\n"
+            "ComboBOT está diseñado para darle vida a tu servidor de Discord con un sistema híbrido "
+            "avanzado, combinando potencia musical y diversión interactiva en un solo lugar. "
+            "Olvidate de las configuraciones complejas en páginas web: ahora todo se maneja de forma "
+            "instantánea e intuitiva directamente desde el chat usando la tecnología nativa de Discord. 🤖"
+        ), 
+        color=discord.Color.from_rgb(0, 240, 255)
+    )
+    
+    embed.add_field(name="🔊 Música Premium (Slash)", value="`/play [canción]`, `/stop`, `/skip` 🎧", inline=False)
+    embed.add_field(name="🎮 Juegos Multijugador (Slash)", value="`/juego [1-100] [@rival]`, `/mine`, `/cyber_roulette` 🥊", inline=False)
+    embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
+    
     await interaction.response.send_message(embed=embed)
 
 @bot.tree.command(name="juego", description="Lanzá uno de los 100 juegos totalmente personalizados contra un oponente")
@@ -361,7 +373,7 @@ async def cmd_juego(inter: discord.Interaction, numero: int, oponente: discord.M
         return await inter.response.send_message("❌ ¡No te podés auto-desafiar!", ephemeral=True)
 
     config = JUEGOS_DETALLES[numero]
-    view = JuegoMasivoView(inter.user, oponente, numero, config)[cite: 2]
+    view = JuegoMasivoView(inter.user, oponente, numero, config)
     
     embed = discord.Embed(title="⚔️ PELEA TOTAL INICIADA ⚔️", description=f"Modo: **#{numero} - {config['name']}**\n\n¡Cada uno tiene 100 HP, que gane el mejor!", color=discord.Color.gold())
     await inter.response.send_message(embed=embed, view=view)
@@ -375,13 +387,11 @@ async def play_slash(interaction: discord.Interaction, cancion: str):
     
     await interaction.response.defer()
     
-    # Conexión al canal de voz usando Wavelink
     try:
         vc: wavelink.Player = interaction.guild.voice_client or await interaction.user.voice.channel.connect(cls=wavelink.Player)
     except Exception as e:
         return await interaction.followup.send(f"❌ Error al conectar al canal de voz: {e}")
 
-    # Buscar pistas usando la API pública de Wavelink
     tracks = await wavelink.Playable.search(cancion)
     if not tracks:
         return await interaction.followup.send("❌ No encontré ninguna canción con ese nombre.")
@@ -404,7 +414,7 @@ async def stop_slash(interaction: discord.Interaction):
 @bot.tree.command(name="mine", description="Minería de datos espacial")
 async def mine(interaction: discord.Interaction):
     recompensa = random.randint(120, 550)
-    await interaction.response.send_message(f"🌌 **{interaction.user.name}** extrajo **{recompensa} StarChips** de servidores encriptados.")
+    await interaction.response.send_message(f"🌌 **{interaction.user.name}** extraxo **{recompensa} StarChips** de servidores encriptados.")
 
 @bot.tree.command(name="cyber_roulette", description="Mesa de azar cuántico")
 async def cyber_roulette(interaction: discord.Interaction, apuesta: int = 200):
