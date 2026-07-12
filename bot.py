@@ -141,9 +141,17 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     """Envía un mensaje de bienvenida estético cuando el bot se une a un nuevo servidor"""
-    channel = next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
+    print(f"📥 ComboBOT se unió al servidor: {guild.name} (ID: {guild.id})", flush=True)
+    
+    # Intenta buscar el canal del sistema (donde llegan los mensajes de bienvenida de Discord)
+    channel = guild.system_channel
+    
+    # Si no hay canal del sistema, busca el primer canal de texto donde pueda escribir
+    if not channel:
+        channel = next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
     
     if channel is None:
+        print(f"⚠️ No se encontró ningún canal con permisos de escritura en {guild.name}", flush=True)
         return
 
     embed = discord.Embed(
@@ -174,9 +182,10 @@ async def on_guild_join(guild):
 
     try:
         await channel.send(embed=embed)
+        print(f"✅ Mensaje de bienvenida enviado con éxito a #{channel.name}", flush=True)
     except Exception as e:
-        print(f"No se pudo mandar el mensaje de bienvenida: {e}")
-
+        print(f"❌ Error al mandar el mensaje en {guild.name}: {e}", flush=True)
+        
 # --- MENÚ DE AYUDA ORIGINAL ---
 @bot.command(name="help_cyber")
 async def help_cyber(ctx):
