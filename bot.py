@@ -276,14 +276,14 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name="¡Música y Juegos! 🔥 | /help_cyber"))
     
     try:
-        synced = await bot.tree.sync()[cite: 1]
+        synced = await bot.tree.sync()
         print(f"🌌 Sincronización exitosa: {len(synced)} comandos globales listos.", flush=True)
     except Exception as e:
         print(f"❌ Error al sincronizar comandos: {e}", flush=True)
     
     try:
         node = wavelink.Node(uri="http://ssl.lavalink.rocks:443", password="youshallnotpass")
-        await wavelink.Pool.connect(nodes=[node], client=bot)[cite: 1]
+        await wavelink.Pool.connect(nodes=[node], client=bot)
         print("🎵 [Wavelink] Nodo de audio premium enlazado.", flush=True)
     except Exception as e:
         print(f"⚠️ Alerta Wavelink: {e}")
