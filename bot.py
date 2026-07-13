@@ -144,10 +144,19 @@ async def play(interaction: discord.Interaction, busqueda: str):
         except Exception as e:
             return await interaction.followup.send(f"❌ Error al conectar al canal de voz: {e}")
 
-    # Buscar la canción
-    tracks = await wavelink.Playable.search(busqueda)
+    # ==========================================
+    # 🔍 NUEVO MOTOR DE BÚSQUEDA INTELIGENTE
+    # ==========================================
+    if busqueda.startswith("http://") or busqueda.startswith("https://"):
+        # Si es un enlace de Spotify, SoundCloud, YouTube, etc.
+        tracks = await wavelink.Playable.search(busqueda)
+    else:
+        # Si es texto plano, busca rápido en YouTube
+        tracks = await wavelink.Playable.search(f"ytsearch:{busqueda}")
+    # ==========================================
+
     if not tracks:
-        return await interaction.followup.send("❌ No encontré ninguna canción con ese nombre. 😢")
+        return await interaction.followup.send("❌ No encontré ninguna canción con ese nombre o enlace. 😢")
 
     track = tracks[0]
     await player.queue.put(track)
@@ -157,15 +166,6 @@ async def play(interaction: discord.Interaction, busqueda: str):
         await interaction.followup.send(f"🎶 Empezando a sonar: **{track.title}** 🚀")
     else:
         await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
-
-@bot.tree.command(name="stop", description="Detiene la música y saca al bot del canal de voz ⏹️")
-async def stop(interaction: discord.Interaction):
-    player: wavelink.Player = interaction.guild.voice_client
-    if not player:
-        return await interaction.response.send_message("❌ No estoy reproduciendo nada en este servidor. 📭", ephemeral=True)
-    
-    await player.disconnect()
-    await interaction.response.send_message("👋 ¡Música parada y bot desconectado! Nos vemos. 🌌")
 
 @bot.tree.command(name="skip", description="Se salta la canción actual ⏭️")
 async def skip(interaction: discord.Interaction):
