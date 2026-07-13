@@ -136,6 +136,13 @@ async def play(interaction: discord.Interaction, busqueda: str):
     if not wavelink.Pool.nodes:
         return await interaction.followup.send("⚠️ El servidor de música está temporalmente caído. ¡Reintentá más tarde! 🛠️")
 
+    if busqueda.startswith("http://") or busqueda.startswith("https://"):
+        # Si pega un link directo (Spotify, SoundCloud, YT)
+        tracks = await wavelink.Playable.search(busqueda)
+    else:
+        # Búsqueda rápida nativa de YouTube si solo escribe texto ⚡
+        tracks = await wavelink.Playable.search(busqueda, source=wavelink.TrackSource.YouTube)
+        
     player: wavelink.Player = interaction.guild.voice_client
 
     if not player:
