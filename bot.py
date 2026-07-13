@@ -1,11 +1,10 @@
-import os 
+import os
 import random
 import threading
 from flask import Flask, render_template, session, redirect, request
 import requests
 import discord
 from discord.ext import commands
-import wavelink
 import urllib.parse
 
 # ==============================================================================
@@ -35,7 +34,7 @@ JUEGOS_DETALLES = {
     10: {"name": "Guerra de Nieve", "hit": "te pegó un gélido pelotazo", "crit": "¡te encajó un gualicazo de hielo con una piedra adentro!"},
     11: {"name": "Tiro con Arco", "hit": "te clavó una flecha en la pierna", "crit": "¡Te metió un Headshot certero en el ojo!"},
     12: {"name": "Pelea de Almohadas", "hit": "te dio un cazote de plumas", "crit": "¡te reventó la almohada en la cara y te dejó ciego!"},
-    13: {"name": "Sable de Luz", "hit": "te cortó la defense Jedi", "crit": "¡te rebanó el brazo como si fueras Anakin!"},
+    13: {"name": "Sable de Luz", "hit": "te cortó la defense Jedi", "crit": "¡te rebanó el brazo como si eras Anakin!"},
     14: {"name": "Pulgar de Hierro", "hit": "te ganó la posición del dedo", "crit": "¡te dobló el pulgar hasta hacértelo crujir!"},
     15: {"name": "Lanzamiento de Hacha", "hit": "te rozó el hombro con el filo", "crit": "¡te clavó el hacha de guerra en medio del pecho!"},
     16: {"name": "Batalla de Tanques", "hit": "te disparó un misil ligero", "crit": "¡te perforó el blindaje con un tiro de cañón pesado!"},
@@ -46,7 +45,7 @@ JUEGOS_DETALLES = {
     21: {"name": "Penales de Fútbol", "hit": "te la clavó junto al palo", "crit": "¡te pinchó la pelota a lo Panenka dejando pagando al arquero!"},
     22: {"name": "Volcada de Básquet", "hit": "te metió un triple en la cara", "crit": "¡te saltó por encima y te rompió el tablero!"},
     23: {"name": "Carrera de 100m", "hit": "te sacó una zancada de ventaja", "crit": "¡activó el modo Usain Bolt y te sacó tres cuadras!"},
-    24: {"name": "Tenis de Mesa", "hit": "te metió un efecto endemoniado", "crit": "¡te clavó un smash inalcanzable en la esquina!"},
+    24: {"name": "Tenis de Mesa", "hit": "te metió un effecto endemoniado", "crit": "¡te clavó un smash inalcanzable en la esquina!"},
     25: {"name": "Lanzamiento de Disco", "hit": "tiró unos metros más lejos", "crit": "¡batió el récord olímpico destruyendo tu marca!"},
     26: {"name": "Salto en Largo", "hit": "cayó un centímetro adelante", "crit": "¡voló por los aires como un superhéroe!"},
     27: {"name": "Hipódromo", "hit": "su caballo picó en punta", "crit": "¡su yegua ganó por puesta de cabeza en el final!"},
@@ -286,13 +285,6 @@ async def on_ready():
         print(f"🌌 Sincronización exitosa: {len(synced)} comandos globales listos.", flush=True)
     except Exception as e:
         print(f"❌ Error al sincronizar comandos: {e}", flush=True)
-    
-    try:
-        node = wavelink.Node(uri="https://mi-lavalink.onrender.com", password="youshallnotpass")
-        await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Wavelink] Nodo de audio premium enlazado.", flush=True)
-    except Exception as e:
-        print(f"⚠️ Alerta Wavelink: {e}")
 
 @bot.event
 async def on_guild_join(guild):
@@ -300,50 +292,37 @@ async def on_guild_join(guild):
     if not channel: 
         return
 
+    # 🔥 AHORA EL TÍTULO TIENE EL LINK COMPLETO HACIA TU PAGINA WEB DE GITHUB 🔥
     embed = discord.Embed(
-        title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!!", 
+        title="🛸 ¡¡Bienvenido y Gracias por invitar a ComboBOT!! (Clic acá para ir a la Web)", 
+        url="https://alejo2026uwu.github.io",
         description=(
             "Sincronización total en la nube y entertainment puro para tu comunidad. 🚀✨\n\n"
             "ComboBOT está diseñado para darle vida a tu servidor de Discord con un sistema híbrido "
-            "avanzado, combinando potencia musical y diversión interactiva en un solo lugar. "
-            "Olvidate de las configuraciones complejas en páginas web: ahora todo se maneja de forma "
-            "instantánea e intuitiva directamente desde el chat usando la tecnología nativa de Discord. 🤖"
+            "avanzado, combinando potencia musical y diversión interactiva en un solo lugar. 🤖\n\n"
+            "👉 **[¡Hacé clic acá para visitar nuestro sitio oficial e invitar más amigos!](https://alejo2026uwu.github.io)** 🌌"
         ), 
         color=discord.Color.from_rgb(0, 240, 255)
     )
     
-    # 🖼️ Imagen directo desde internet (Brave link corregido sin archivos locales)
     embed.set_thumbnail(url="https://imgs.search.brave.com/76aZ7hkV1PPVrRyXaVnQMoZPLmkS53ropoOljJO1OJ4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzdhLzBi/LzkxLzdhMGI5MWZi/M2Y3OGU4MTg0Mzg0/MDQ5NWQ4ZWQ4YmM2/LmpwZw")
     
     embed.add_field(
-        name="🎵 Música Premium", 
-        value="• Audio de alta fidelidad y estabilidad absoluta vía Wavelink sin cortes. Disfrutá de tus canciones y playlists favoritas.",
-        inline=False
-    )
-
-    embed.add_field(
         name="🕹️ Sistema de Juegos", 
-        value="• Desafíos interactivos y modos competitivos multijugador directamente en el chat para divertirte con tus amigos.",
+        value="• Desafíos interactivos y modos competitivos multijugador directamente en el chat.",
         inline=False
     )
     
     embed.add_field(
-        name="🖼️ Edición de Imágenes", 
-        value="• Personalización avanzada, creación de memes y edición multimedia con comandos rápidos.",
-        inline=False
-    )
-    
-    embed.add_field(
-        name="💻 Comandos de Barra Básicos (Slash Commands)", 
+        name="💻 Comandos de Barra Básicos (Slash Comands)", 
         value=(
-            "• `/play` - Reproduce música en tu canal de voz. 🎧\n"
             "• `/juego` - Explora y arranca los desafíos interactivos. 🥊\n"
             "• `/help_cyber` - Muestra la lista completa de comandos disponibles. 🤖"
         ),
         inline=False
     )
     
-    embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
+    embed.set_footer(text="ComboBOT 2026 | Sitio Oficial: alejo2026uwu.github.io ❤️")
 
     await channel.send(embed=embed)
     
@@ -351,18 +330,15 @@ async def on_guild_join(guild):
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot")
 async def help_cyber_slash(interaction: discord.Interaction):
     embed = discord.Embed(
-        title="🛸 Central de Comandos — ComboBOT", 
+        title="🛸 Central de Comandos — ComboBOT (Ir a la Web Oficial)", 
+        url="https://alejo2026uwu.github.io",
         description=(
             "¡Todos los comandos fueron actualizados al sistema nativo `/`! 🚀✨\n\n"
-            "ComboBOT está diseñado para darle vida a tu servidor de Discord con un sistema híbrido "
-            "avanzado, combinando potencia musical y diversión interactiva en un solo lugar. "
-            "Olvidate de las configuraciones complejas en páginas web: ahora todo se maneja de forma "
-            "instantánea e intuitiva directamente desde el chat usando la tecnología nativa de Discord. 🤖"
+            "👉 **[Visitar alejo2026uwu.github.io para invitar](https://alejo2026uwu.github.io)**"
         ), 
         color=discord.Color.from_rgb(0, 240, 255)
     )
     
-    embed.add_field(name="🔊 Música Premium (Slash)", value="`/play [canción]`, `/stop`, `/skip` 🎧", inline=False)
     embed.add_field(name="🎮 Juegos Multijugador (Slash)", value="`/juego [1-100] [@rival]`, `/mine`, `/cyber_roulette` 🥊", inline=False)
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
     
@@ -380,37 +356,6 @@ async def cmd_juego(inter: discord.Interaction, numero: int, oponente: discord.M
     
     embed = discord.Embed(title="⚔️ PELEA TOTAL INICIADA ⚔️", description=f"Modo: **#{numero} - {config['name']}**\n\n¡Cada uno tiene 100 HP, que gane el mejor!", color=discord.Color.gold())
     await inter.response.send_message(embed=embed, view=view)
-
-
-# --- COMANDOS DE MÚSICA DE BARRA (WAVELINK ACTUALIZADO) ---
-@bot.tree.command(name="play", description="Reproduce música premium en tu canal de voz")
-async def play_slash(interaction: discord.Interaction, cancion: str):
-    if not interaction.user.voice:
-        return await interaction.response.send_message("❌ ¡Tenés que meterte a un canal de voz primero, causa!", ephemeral=True)
-    
-    await interaction.response.defer()
-    
-    try:
-        vc: wavelink.Player = interaction.guild.voice_client or await interaction.user.voice.channel.connect(cls=wavelink.Player)
-    except Exception as e:
-        return await interaction.followup.send(f"❌ Error al conectar al canal de voz: {e}")
-
-    tracks = await wavelink.Playable.search(cancion)
-    if not tracks:
-        return await interaction.followup.send("❌ No encontré ninguna canción con ese nombre.")
-
-    track = tracks[0]
-    await vc.play(track)
-    await interaction.followup.send(f"🎵 **Reproduciendo ahora:** `{track.title}` de forma fluida y sin cortes. 😎💥")
-
-@bot.tree.command(name="stop", description="Detiene la música y saca al bot del canal")
-async def stop_slash(interaction: discord.Interaction):
-    vc: wavelink.Player = interaction.guild.voice_client
-    if vc:
-        await vc.disconnect()
-        await interaction.response.send_message("👋 Transmisión finalizada. ¡Chau, pibes!")
-    else:
-        await interaction.response.send_message("❌ No estoy reproduciendo nada en este momento.", ephemeral=True)
 
 
 # --- ADICIONALES DE ECONOMÍA EN BARRA ---
