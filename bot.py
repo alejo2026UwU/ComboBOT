@@ -87,12 +87,11 @@ class JuegoMasivoView(discord.ui.View):
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
 async def conectar_node():
-    """Probando con otro nodo de Lavalink público y activo 🛡️🎵"""
+    """Conecta a tu propio servidor de Lavalink configurado 🛡️🎵"""
     try:
-        # Probamos con este servidor que está online:
         node = wavelink.Node(uri="https://mi-lavalink.onrender.com:8080", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Lavalink] ¡Conectado exitosamente al nuevo nodo! 🎸", flush=True)
+        print("🎵 [Lavalink] ¡Conectado exitosamente al nodo nativo! 🎸", flush=True)
     except Exception as e:
         print(f"⚠️ [Lavalink Alert] Falló la conexión: {e}", flush=True)
 
@@ -103,7 +102,7 @@ async def on_ready():
     # RPC Activo 🚀
     activity = discord.Activity(
         type=discord.ActivityType.watching, 
-        name="¡ComboBOT Premium! 🚀 | /help_cyber 🛸"
+        name="¡ComboBOT Premium! 🚀 | /help 🛸"
     )
     await bot.change_presence(activity=activity)
     
@@ -121,7 +120,7 @@ async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
     print(f"✅ Nodo de Wavelink listo: {payload.node.identifier}", flush=True)
 
 # ==============================================================================
-# 🎮 COMANDOS DE MÚSICA SEPARADOS POR PLATAFORMA (YT, SPOTIFY, SOUNDCLOUD)
+# 🎮 MOTOR INTERNO Y COMANDOS DE MÚSICA SEPARADOS POR PLATAFORMA
 # ==============================================================================
 async def reproducir_tema(interaction: discord.Interaction, busqueda: str, source):
     """Función interna para conectar y reproducir sin morir en el intento 🛠️🎶"""
@@ -153,7 +152,7 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
         try:
             tracks = await wavelink.Playable.search(busqueda, source=source)
         except Exception:
-            return await interaction.followup.send("⚠️ YouTube bloqueó esta búsqueda. ¡Probá pegando el link directo del tema! 🔗")
+            return await interaction.followup.send("⚠️ Tu servidor Lavalink no pudo procesar esta búsqueda. ¡Probá pegando el enlace directo! 🔗")
 
     if not tracks:
         return await interaction.followup.send("❌ No encontré ninguna canción. 😢")
@@ -166,14 +165,87 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
         await interaction.followup.send(f"🎶 Empezando a sonar: **{track.title}** 🚀")
     else:
         await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
+
+# --- 🔴 YOUTUBE PLAY & AUTOCOMPLETE ---
+@bot.tree.command(name="play_yt", description="Busca y reproduce música de YouTube 🔴")
+async def play_yt(interaction: discord.Interaction, busqueda: str):
+    await interaction.response.defer()
+    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.YouTube)
+
+@play_yt.autocomplete("busqueda")
+async def yt_autocomplete(interaction: discord.Interaction, current: str):
+    if not current or len(current) < 2:
+        return []
+    try:
+        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube)
+        if tracks:
+            return [discord.app_commands.Choice(name=f"🎥 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+    except Exception:
+        pass
+    return []
+
+# --- 🟢 SPOTIFY PLAY & AUTOCOMPLETE ---
+@bot.tree.command(name="play_spotify", description="Busca y reproduce música de Spotify 🟢")
+async def play_spotify(interaction: discord.Interaction, busqueda: str):
+    await interaction.response.defer()
+    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.Spotify)
+
+@play_spotify.autocomplete("busqueda")
+async def spotify_autocomplete(interaction: discord.Interaction, current: str):
+    if not current or len(current) < 2:
+        return []
+    try:
+        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.Spotify)
+        if tracks:
+            return [discord.app_commands.Choice(name=f"🟢 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+    except Exception:
+        pass
+    return []
+
+# --- 🟠 SOUNDCLOUD PLAY & AUTOCOMPLETE ---
+@bot.tree.command(name="play_soundcloud", description="Busca y reproduce música de SoundCloud 🟠")
+async def play_soundcloud(interaction: discord.Interaction, busqueda: str):
+    await interaction.response.defer()
+    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.SoundCloud)
+
+@play_soundcloud.autocomplete("busqueda")
+async def soundcloud_autocomplete(interaction: discord.Interaction, current: str):
+    if not current or len(current) < 2:
+        return []
+    try:
+        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.SoundCloud)
+        if tracks:
+            return [discord.app_commands.Choice(name=f"🟠 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+    except Exception:
+        pass
+    return []
+
+# --- COMANDO SKIP ---
+@bot.tree.command(name="skip", description="Se salta la canción actual ⏭️")
+async def skip(interaction: discord.Interaction):
+    player: wavelink.Player = interaction.guild.voice_client
+    if not player or not player.playing:
+        return await interaction.response.send_message("❌ No hay nada sonando para saltear. 💨", ephemeral=True)
+    
+    await player.skip()
+    await interaction.response.send_message("⏭️ Canción salteada con éxito. ¡Siguiente tema! 🎧")
+
+# --- COMANDO STOP ---
+@bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
+async def stop(interaction: discord.Interaction):
+    player: wavelink.Player = interaction.guild.voice_client
+    if not player:
+        return await interaction.response.send_message("❌ El bot no está en ningún canal de voz. 💨", ephemeral=True)
+    
+    await player.disconnect()
+    await interaction.response.send_message("⏹️ Música detenida. ComboBOT fuera del canal. 🛸")
+
 # ==============================================================================
 # 🛸 COMANDO DE AYUDA CON BOTÓN DE INVITACIÓN DIRECTA 🚀
 # ==============================================================================
-
 class HelpButtons(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-        # Añade un botón que abre el enlace directamente sin escribir código extra
         self.add_item(discord.ui.Button(
             label="👾 Servidor de Soporte", 
             url="https://discord.gg/k2uwRFzHD", 
@@ -199,7 +271,8 @@ async def help_slash(interaction: discord.Interaction):
             "• `/play_yt [canción]` - Busca y reproduce en YouTube 🔴\n"
             "• `/play_spotify [canción]` - Busca y reproduce en Spotify 🟢\n"
             "• `/play_soundcloud [canción]` - Busca y reproduce en SoundCloud 🟠\n"
-            "• `/stop` - Detiene la música y saca al bot del canal ⏹️"
+            "• `/skip` - Detiene la música y saca al bot del canal ⏭️\n"
+            "• `/stop` - Detiene la música por completo ⏹️"
         ), 
         inline=False
     )
@@ -215,33 +288,9 @@ async def help_slash(interaction: discord.Interaction):
     )
     
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
-    
-    # Enviamos el embed junto con el botón de Discord
     await interaction.response.send_message(embed=embed, view=HelpButtons())
-    # ==========================================
 
-    if not tracks:
-        return await interaction.followup.send("❌ No encontré ninguna canción con ese nombre o enlace. 😢")
-
-    track = tracks[0]
-    await player.queue.put(track)
-    
-    if not player.playing:
-        await player.play(player.queue.get())
-        await interaction.followup.send(f"🎶 Empezando a sonar: **{track.title}** 🚀")
-    else:
-        await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
-
-@bot.tree.command(name="skip", description="Se salta la canción actual ⏭️")
-async def skip(interaction: discord.Interaction):
-    player: wavelink.Player = interaction.guild.voice_client
-    if not player or not player.playing:
-        return await interaction.response.send_message("❌ No hay nada sonando para saltear. 💨", ephemeral=True)
-    
-    await player.skip()
-    await interaction.response.send_message("⏭️ Canción salteada con éxito. ¡Siguiente tema! 🎧")
-
-# --- CENTRAL DE AYUDA (ACTUALIZADA CON MÚSICA) ---
+# --- CENTRAL DE AYUDA SECUNDARIA (WEB) ---
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot 🛸")
 async def help_cyber_slash(interaction: discord.Interaction):
     embed = discord.Embed(
@@ -255,7 +304,7 @@ async def help_cyber_slash(interaction: discord.Interaction):
     )
     
     embed.add_field(name="🎮 Juegos Multijugador", value="`/juego [1-100] [@rival]`, `/mine`, `/cyber_roulette` 🥊", inline=False)
-    embed.add_field(name="🎵 Sistema de Música", value="`/play [canción]`, `/skip`, `/stop` 🎶", inline=False)
+    embed.add_field(name="🎵 Sistema de Música", value="`/play_yt`, `/play_spotify`, `/play_soundcloud`, `/skip`, `/stop` 🎶", inline=False)
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
     
     await interaction.response.send_message(embed=embed)
