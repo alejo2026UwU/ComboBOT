@@ -176,7 +176,11 @@ async def yt_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube)
+        # Ponemos un límite de 1.8 segundos para que no cuelgue Discord
+        tracks = await asyncio.wait_for(
+            wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube),
+            timeout=1.8
+        )
         if tracks:
             return [discord.app_commands.Choice(name=f"🎥 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
@@ -194,7 +198,10 @@ async def spotify_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.Spotify)
+        tracks = await asyncio.wait_for(
+            wavelink.Playable.search(current, source=wavelink.TrackSource.Spotify),
+            timeout=1.8
+        )
         if tracks:
             return [discord.app_commands.Choice(name=f"🟢 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
@@ -212,7 +219,10 @@ async def soundcloud_autocomplete(interaction: discord.Interaction, current: str
     if not current or len(current) < 2:
         return []
     try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.SoundCloud)
+        tracks = await asyncio.wait_for(
+            wavelink.Playable.search(current, source=wavelink.TrackSource.SoundCloud),
+            timeout=1.8
+        )
         if tracks:
             return [discord.app_commands.Choice(name=f"🟠 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
