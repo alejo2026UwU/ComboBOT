@@ -90,7 +90,7 @@ async def conectar_node():
     """Probando con otro nodo de Lavalink público y activo 🛡️🎵"""
     try:
         # Probamos con este servidor que está online:
-        node = wavelink.Node(uri="http://lavalink.yurei.lol:80", password="youshallnotpass")
+        node = wavelink.Node(uri="https://mi-lavalink.onrender.com:8080", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
         print("🎵 [Lavalink] ¡Conectado exitosamente al nuevo nodo! 🎸", flush=True)
     except Exception as e:
