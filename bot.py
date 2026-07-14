@@ -165,7 +165,12 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
     else:
         await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
 
-# --- 🔴 YOUTUBE AUTOCOMPLETE ---
+# --- 🔴 YOUTUBE PLAY & AUTOCOMPLETE ---
+@bot.tree.command(name="play_yt", description="Busca y reproduce música de YouTube 🔴")
+async def play_yt(interaction: discord.Interaction, busqueda: str):
+    await interaction.response.defer()
+    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.YouTube)
+
 @play_yt.autocomplete("busqueda")
 async def yt_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
@@ -174,7 +179,6 @@ async def yt_autocomplete(interaction: discord.Interaction, current: str):
         node = wavelink.Pool.get_node()
         if not node:
             return []
-        # Búsqueda súper directa usando el nodo activo
         tracks = await asyncio.wait_for(
             node.search(current, source=wavelink.TrackSource.YouTube),
             timeout=1.2
@@ -185,7 +189,13 @@ async def yt_autocomplete(interaction: discord.Interaction, current: str):
         pass
     return []
 
-# --- 🟢 SPOTIFY AUTOCOMPLETE ---
+
+# --- 🟢 SPOTIFY PLAY & AUTOCOMPLETE ---
+@bot.tree.command(name="play_spotify", description="Busca y reproduce música de Spotify 🟢")
+async def play_spotify(interaction: discord.Interaction, busqueda: str):
+    await interaction.response.defer()
+    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.Spotify)
+
 @play_spotify.autocomplete("busqueda")
 async def spotify_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
@@ -204,7 +214,13 @@ async def spotify_autocomplete(interaction: discord.Interaction, current: str):
         pass
     return []
 
-# --- 🟠 SOUNDCLOUD AUTOCOMPLETE ---
+
+# --- 🟠 SOUNDCLOUD PLAY & AUTOCOMPLETE ---
+@bot.tree.command(name="play_soundcloud", description="Busca y reproduce música de SoundCloud 🟠")
+async def play_soundcloud(interaction: discord.Interaction, busqueda: str):
+    await interaction.response.defer()
+    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.SoundCloud)
+
 @play_soundcloud.autocomplete("busqueda")
 async def soundcloud_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
