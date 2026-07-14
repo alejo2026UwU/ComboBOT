@@ -165,21 +165,19 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
     else:
         await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
 
-# --- 🔴 YOUTUBE PLAY & AUTOCOMPLETE ---
-@bot.tree.command(name="play_yt", description="Busca y reproduce música de YouTube 🔴")
-async def play_yt(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.YouTube)
-
+# --- 🔴 YOUTUBE AUTOCOMPLETE ---
 @play_yt.autocomplete("busqueda")
 async def yt_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
-        # Ponemos un límite de 1.8 segundos para que no cuelgue Discord
+        node = wavelink.Pool.get_node()
+        if not node:
+            return []
+        # Búsqueda súper directa usando el nodo activo
         tracks = await asyncio.wait_for(
-            wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube),
-            timeout=1.8
+            node.search(current, source=wavelink.TrackSource.YouTube),
+            timeout=1.2
         )
         if tracks:
             return [discord.app_commands.Choice(name=f"🎥 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
@@ -187,20 +185,18 @@ async def yt_autocomplete(interaction: discord.Interaction, current: str):
         pass
     return []
 
-# --- 🟢 SPOTIFY PLAY & AUTOCOMPLETE ---
-@bot.tree.command(name="play_spotify", description="Busca y reproduce música de Spotify 🟢")
-async def play_spotify(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.Spotify)
-
+# --- 🟢 SPOTIFY AUTOCOMPLETE ---
 @play_spotify.autocomplete("busqueda")
 async def spotify_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
+        node = wavelink.Pool.get_node()
+        if not node:
+            return []
         tracks = await asyncio.wait_for(
-            wavelink.Playable.search(current, source=wavelink.TrackSource.Spotify),
-            timeout=1.8
+            node.search(current, source=wavelink.TrackSource.Spotify),
+            timeout=1.2
         )
         if tracks:
             return [discord.app_commands.Choice(name=f"🟢 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
@@ -208,20 +204,18 @@ async def spotify_autocomplete(interaction: discord.Interaction, current: str):
         pass
     return []
 
-# --- 🟠 SOUNDCLOUD PLAY & AUTOCOMPLETE ---
-@bot.tree.command(name="play_soundcloud", description="Busca y reproduce música de SoundCloud 🟠")
-async def play_soundcloud(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.SoundCloud)
-
+# --- 🟠 SOUNDCLOUD AUTOCOMPLETE ---
 @play_soundcloud.autocomplete("busqueda")
 async def soundcloud_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
+        node = wavelink.Pool.get_node()
+        if not node:
+            return []
         tracks = await asyncio.wait_for(
-            wavelink.Playable.search(current, source=wavelink.TrackSource.SoundCloud),
-            timeout=1.8
+            node.search(current, source=wavelink.TrackSource.SoundCloud),
+            timeout=1.2
         )
         if tracks:
             return [discord.app_commands.Choice(name=f"🟠 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
