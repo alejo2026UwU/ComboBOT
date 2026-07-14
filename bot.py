@@ -89,7 +89,7 @@ class JuegoMasivoView(discord.ui.View):
 async def conectar_node():
     """Conecta a tu propio servidor de Lavalink configurado 🛡️🎵"""
     try:
-        node = wavelink.Node(uri="https://mi-lavalink.onrender.com:8080", password="youshallnotpass")
+        node = wavelink.Node(uri="https://mi-lavalink.onrender.com", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
         print("🎵 [Lavalink] ¡Conectado exitosamente al nodo nativo! 🎸", flush=True)
     except Exception as e:
