@@ -122,27 +122,18 @@ async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
     print(f"✅ Nodo de Wavelink listo: {payload.node.identifier}", flush=True)
 
 # ==============================================================================
-# 5. COMANDOS DE MÚSICA EN BARRA (SLASH COMMANDS) 🎵🎶
+# 🔥 COMANDO PLAY CON AUTOCOMPLETADO ACTIVO 🔥
 # ==============================================================================
-@bot.tree.command(name="play", description="Reproduce una canción de YouTube en tu canal de voz 🎵")
+@bot.tree.command(name="play", description="Reproduce una canción (YT, Spotify, SoundCloud) 🎵")
 async def play(interaction: discord.Interaction, busqueda: str):
     await interaction.response.defer()
     
-    # Validar si el usuario está en un canal de voz
     if not interaction.user.voice:
         return await interaction.followup.send("❌ ¡Tenés que estar en un canal de voz para usar esto! 🎤")
     
-    # Validar si el nodo de música está conectado
     if not wavelink.Pool.nodes:
-        return await interaction.followup.send("⚠️ El servidor de música está temporalmente caído. ¡Reintentá más tarde! 🛠️")
+        return await interaction.followup.send("⚠️ El servidor de música está temporalmente caído. 🛠️")
 
-    if busqueda.startswith("http://") or busqueda.startswith("https://"):
-        # Si pega un link directo (Spotify, SoundCloud, YT)
-        tracks = await wavelink.Playable.search(busqueda)
-    else:
-        # Búsqueda rápida nativa de YouTube si solo escribe texto ⚡
-        tracks = await wavelink.Playable.search(busqueda, source=wavelink.TrackSource.YouTube)
-        
     player: wavelink.Player = interaction.guild.voice_client
 
     if not player:
@@ -151,15 +142,42 @@ async def play(interaction: discord.Interaction, busqueda: str):
         except Exception as e:
             return await interaction.followup.send(f"❌ Error al conectar al canal de voz: {e}")
 
-    # ==========================================
-    # 🔍 NUEVO MOTOR DE BÚSQUEDA INTELIGENTE
-    # ==========================================
-    if busqueda.startswith("http://") or busqueda.startswith("https://"):
-        # Si es un enlace de Spotify, SoundCloud, YouTube, etc.
-        tracks = await wavelink.Playable.search(busqueda)
+    try:
+        # Si eligió una opción del autocompletado (viene el link) o pegó un link directo
+        if busqueda.startswith("http://") or busqueda.startswith("https://"):
+            tracks = await wavelink.Playable.search(busqueda)
+        else:
+            tracks = await wavelink.Playable.search(busqueda, source=wavelink.TrackSource.YouTube)
+    except Exception as e:
+        return await interaction.followup.send(f"❌ Error al buscar el tema: {e} 😢")
+
+    if not tracks:
+        return await interaction.followup.send("❌ No encontré ninguna canción con ese nombre o link. 😢")
+
+    track = tracks[0]
+    await player.queue.put(track)
+    
+    if not player.playing:
+        await player.play(player.queue.get())
+        await interaction.followup.send(f"🎶 Empezando a sonar: **{track.title}** 🚀")
     else:
-        # Si es texto plano, busca rápido en YouTube
-        tracks = await wavelink.Playable.search(f"ytsearch:{busqueda}")
+        await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
+
+
+# 🔥 ESTO HACE LA MAGIA DE BUSCAR MIENTRAS ESCRIBÍS 🔥
+@play.autocomplete("busqueda")
+async def play_autocomplete(interaction: discord.Interaction, current: str):
+    if not current or len(current) < 2:
+        return []
+    try:
+        # Busca rápido en YouTube los primeros 5 resultados y los muestra en Discord
+        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube)
+        return [
+            discord.app_commands.Choice(name=f"🎵 {track.title[:80]}", value=track.uri)
+            for track in tracks[:5]
+        ]
+    except Exception:
+        return []
     # ==========================================
 
     if not tracks:
