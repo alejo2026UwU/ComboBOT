@@ -171,29 +171,39 @@ async def play_yt(interaction: discord.Interaction, busqueda: str):
 @play_yt.autocomplete("busqueda")
 async def yt_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
-        return [discord.app_commands.Choice(name="🔴 Escribí el nombre del video/canción...", value=current)]
+        return [discord.app_commands.Choice(name="🔴 Escribí el nombre del video o canción...", value=current)]
     try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube)
-        return [discord.app_commands.Choice(name=f"🎥 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+        # Usamos el prefijo de búsqueda explícito de Lavalink para evitar vacíos
+        tracks = await wavelink.Playable.search(f"ytsearch:{current}")
+        if tracks:
+            return [discord.app_commands.Choice(name=f"🎥 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
-        return [discord.app_commands.Choice(name=f"🔍 Buscar en YouTube: {current[:80]}", value=current)]
+        pass
+    return [discord.app_commands.Choice(name=f"🔍 Buscar '{current[:50]}' en YouTube", value=current)]
 
 
 # 2️⃣ --- SPOTIFY PLAY ---
 @bot.tree.command(name="play_spotify", description="Reproduce música de Spotify 🟢")
 async def play_spotify(interaction: discord.Interaction, busqueda: str):
     await interaction.response.defer()
+    # Nota: Si usás Wavelink 3, Spotify se mapea mediante el plugin LavaSrc
     await reproducir_tema(interaction, busqueda, wavelink.TrackSource.Spotify)
 
 @play_spotify.autocomplete("busqueda")
 async def spotify_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
-        return [discord.app_commands.Choice(name="🟢 Escribí el tema o playlist de Spotify...", value=current)]
+        return [discord.app_commands.Choice(name="🟢 Escribí el nombre del tema o playlist...", value=current)]
     try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.Spotify)
-        return [discord.app_commands.Choice(name=f"🟢 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+        # Intentamos buscar usando el formato compatible con el plugin de Spotify
+        tracks = await wavelink.Playable.search(f"spsearch:{current}")
+        if not tracks: # Respaldo si no tenés LavaSrc activo para búsquedas directas
+            tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.Spotify)
+            
+        if tracks:
+            return [discord.app_commands.Choice(name=f"🟢 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
-        return [discord.app_commands.Choice(name=f"🔍 Buscar en Spotify: {current[:80]}", value=current)]
+        pass
+    return [discord.app_commands.Choice(name=f"🔍 Buscar '{current[:50]}' en Spotify", value=current)]
 
 
 # 3️⃣ --- SOUNDCLOUD PLAY ---
@@ -207,10 +217,65 @@ async def soundcloud_autocomplete(interaction: discord.Interaction, current: str
     if not current or len(current) < 2:
         return [discord.app_commands.Choice(name="🟠 Escribí el tema de SoundCloud...", value=current)]
     try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.SoundCloud)
-        return [discord.app_commands.Choice(name=f"🟠 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+        # Usamos el prefijo explícito de SoundCloud
+        tracks = await wavelink.Playable.search(f"scsearch:{current}")
+        if tracks:
+            return [discord.app_commands.Choice(name=f"🟠 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
-        return [discord.app_commands.Choice(name=f"🔍 Buscar en SoundCloud: {current[:80]}", value=current)]
+        pass
+    return [discord.app_commands.Choice(name=f"🔍 Buscar '{current[:50]}' en SoundCloud", value=current)]
+    # ==============================================================================
+# 🛸 COMANDO DE AYUDA CON BOTÓN DE INVITACIÓN DIRECTA 🚀
+# ==============================================================================
+
+class HelpButtons(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        # Añade un botón que abre el enlace directamente sin escribir código extra
+        self.add_item(discord.ui.Button(
+            label="👾 Servidor de Soporte", 
+            url="https://discord.gg/k2uwRFzHD", 
+            style=discord.ButtonStyle.link,
+            emoji="💬"
+        ))
+
+@bot.tree.command(name="help", description="Muestra la central de ayuda y soporte de ComboBOT 🛸")
+async def help_slash(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="🛸 ¡Central de Ayuda — ComboBOT!", 
+        description=(
+            "¡Sincronización total y música premium para tu comunidad! 🚀✨\n\n"
+            "Manejá todo de forma instantánea e intuitiva usando comandos de barra `/`. "
+            "¡Escribí `/` en el chat para ver todas las opciones disponibles! 🤖"
+        ), 
+        color=discord.Color.from_rgb(0, 240, 255)
+    )
+    
+    embed.add_field(
+        name="🎵 Música Separada por Plataformas", 
+        value=(
+            "• `/play_yt [canción]` - Busca y reproduce en YouTube 🔴\n"
+            "• `/play_spotify [canción]` - Busca y reproduce en Spotify 🟢\n"
+            "• `/play_soundcloud [canción]` - Busca y reproduce en SoundCloud 🟠\n"
+            "• `/stop` - Detiene la música y saca al bot del canal ⏹️"
+        ), 
+        inline=False
+    )
+    
+    embed.add_field(
+        name="🎮 Entretenimiento e Interacción", 
+        value=(
+            "• `/juego [1-100] [@rival]` - Desafía a un amigo a un juego interactivo 🥊\n"
+            "• `/mine` - Minería espacial para conseguir StarChips 🌌\n"
+            "• `/cyber_roulette` - Probá tu suerte en el azar cuántico 🎰"
+        ), 
+        inline=False
+    )
+    
+    embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
+    
+    # Enviamos el embed junto con el botón de Discord
+    await interaction.response.send_message(embed=embed, view=HelpButtons())
     # ==========================================
 
     if not tracks:
