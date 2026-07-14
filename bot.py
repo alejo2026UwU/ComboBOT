@@ -87,14 +87,14 @@ class JuegoMasivoView(discord.ui.View):
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
 async def conectar_node():
-    """Conecta a un nodo de Lavalink público y actualizado 🛡️🎵"""
+    """Probando con otro nodo de Lavalink público y activo 🛡️🎵"""
     try:
-        # Probamos con este nodo público actualizado que tiene soporte activo:
-        node = wavelink.Node(uri="https://lavalink.darrennathanael.com:443", password="youshallnotpass")
+        # Probamos con este servidor que está online:
+        node = wavelink.Node(uri="http://lavalink.yurei.lol:80", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Lavalink] ¡Conectado al nuevo nodo! A sonar fuerte... 🎸", flush=True)
+        print("🎵 [Lavalink] ¡Conectado exitosamente al nuevo nodo! 🎸", flush=True)
     except Exception as e:
-        print(f"⚠️ [Lavalink Alert] No se pudo conectar: {e}", flush=True)
+        print(f"⚠️ [Lavalink Alert] Falló la conexión: {e}", flush=True)
 
 @bot.event
 async def on_ready():
