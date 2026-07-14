@@ -123,30 +123,37 @@ async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
 # ==============================================================================
 # 🎮 COMANDOS DE MÚSICA SEPARADOS POR PLATAFORMA (YT, SPOTIFY, SOUNDCLOUD)
 # ==============================================================================
-
 async def reproducir_tema(interaction: discord.Interaction, busqueda: str, source):
-    """Función interna para conectar y reproducir de forma genérica 🛠️"""
+    """Función interna para conectar y reproducir sin morir en el intento 🛠️🎶"""
     if not interaction.user.voice:
-        return await interaction.followup.send("❌ ¡Tenés que estar en un canal de voz para usar esto! 🎤")
+        return await interaction.followup.send("❌ ¡Tenés que estar en un canal de voz! 🎤")
     
-    if not wavelink.Pool.nodes:
-        return await interaction.followup.send("⚠️ El servidor de música está temporalmente caído. 🛠️")
-
     player: wavelink.Player = interaction.guild.voice_client
 
     if not player:
         try:
             player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
         except Exception as e:
-            return await interaction.followup.send(f"❌ Error al conectar al canal de voz: {e}")
+            return await interaction.followup.send(f"❌ Error al conectar al canal: {e}")
+
+    # Forzar el prefijo correcto según la plataforma elegida
+    query = busqueda
+    if not (busqueda.startswith("http://") or busqueda.startswith("https://")):
+        if source == wavelink.TrackSource.YouTube:
+            query = f"ytsearch:{busqueda}"
+        elif source == wavelink.TrackSource.Spotify:
+            query = f"spsearch:{busqueda}"
+        elif source == wavelink.TrackSource.SoundCloud:
+            query = f"scsearch:{busqueda}"
 
     try:
-        if busqueda.startswith("http://") or busqueda.startswith("https://"):
-            tracks = await wavelink.Playable.search(busqueda)
-        else:
-            tracks = await wavelink.Playable.search(busqueda, source=source)
+        tracks = await wavelink.Playable.search(query)
     except Exception as e:
-        return await interaction.followup.send(f"❌ Error al buscar el tema: {e} 😢")
+        # Si falla el buscador por IP bloqueada, intentamos el último recurso en texto plano
+        try:
+            tracks = await wavelink.Playable.search(busqueda, source=source)
+        except Exception:
+            return await interaction.followup.send("⚠️ YouTube bloqueó esta búsqueda. ¡Probá pegando el link directo del tema! 🔗")
 
     if not tracks:
         return await interaction.followup.send("❌ No encontré ninguna canción. 😢")
@@ -159,55 +166,6 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
         await interaction.followup.send(f"🎶 Empezando a sonar: **{track.title}** 🚀")
     else:
         await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
-
-
-# 1️⃣ --- YOUTUBE PLAY ---
-@bot.tree.command(name="play_yt", description="Reproduce música de YouTube 🔴")
-async def play_yt(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.YouTube)
-
-@play_yt.autocomplete("busqueda")
-async def yt_autocomplete(interaction: discord.Interaction, current: str):
-    if not current or len(current) < 2:
-        return []
-    try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube)
-        return [discord.app_commands.Choice(name=f"🎥 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
-    except Exception:
-        return []
-
-# 2️⃣ --- SPOTIFY PLAY ---
-@bot.tree.command(name="play_spotify", description="Reproduce música de Spotify 🟢")
-async def play_spotify(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.Spotify)
-
-@play_spotify.autocomplete("busqueda")
-async def spotify_autocomplete(interaction: discord.Interaction, current: str):
-    if not current or len(current) < 2:
-        return []
-    try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.Spotify)
-        return [discord.app_commands.Choice(name=f"🟢 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
-    except Exception:
-        return []
-
-# 3️⃣ --- SOUNDCLOUD PLAY ---
-@bot.tree.command(name="play_soundcloud", description="Reproduce música de SoundCloud 🟠")
-async def play_soundcloud(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.SoundCloud)
-
-@play_soundcloud.autocomplete("busqueda")
-async def soundcloud_autocomplete(interaction: discord.Interaction, current: str):
-    if not current or len(current) < 2:
-        return []
-    try:
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.SoundCloud)
-        return [discord.app_commands.Choice(name=f"🟠 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
-    except Exception:
-        return []
 # ==============================================================================
 # 🛸 COMANDO DE AYUDA CON BOTÓN DE INVITACIÓN DIRECTA 🚀
 # ==============================================================================
