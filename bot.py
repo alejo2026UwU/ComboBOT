@@ -430,7 +430,7 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
         tracks = await wavelink.Playable.search(query)
     except Exception as e:
         print(f"❌ Error búsqueda 1: {e}", flush=True)
-        try:
+    try:
         # ¡Ojo acá! Tiene que tener 4 espacios más de sangría que el 'try' 
         tracks = await wavelink.Playable.search(query, source=wavelink.TrackSource.YouTubeMusic)
     except Exception as e:
