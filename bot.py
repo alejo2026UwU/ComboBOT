@@ -328,21 +328,19 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
-        node = wavelink.Pool.get_node()
-        if not node:
-            return []
-        
+        # Buscamos usando el método global que es compatible con Wavelink 3.0+ ⚡
         tracks = await asyncio.wait_for(
-            node.search(current, source=wavelink.TrackSource.YouTube),
+            wavelink.Playable.search(f"ytsearch:{current}"),
             timeout=1.2
         )
         if tracks:
+            # Mandamos las sugerencias al menú de Discord
             return [discord.app_commands.Choice(name=f"🎵 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
         pass
     
+    # Opción de respaldo instantánea por si falla la búsqueda o tarda de más
     return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
-
 
 # --- COMANDO STOP ---
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
