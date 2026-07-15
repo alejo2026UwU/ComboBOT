@@ -90,7 +90,7 @@ async def conectar_node():
     try:
         # ⚠️ IMPORTANTE: Usá 'wss://' en lugar de 'https://' para WebSockets estables
         # Reemplazá 'tu-lavalink-real.onrender.com' por el nombre real de tu servicio en Render
-        node = wavelink.Node(uri="wss://tu-lavalink-real.onrender.com", password="youshallnotpass")
+        node = wavelink.Node(uri="https://mi-lavalink.onrender.com", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
         print("🎵 [Lavalink] ¡Conectado exitosamente al nodo nativo! 🎸", flush=True)
     except Exception as e:
