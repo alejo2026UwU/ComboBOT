@@ -234,10 +234,10 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
-        # Nodo de Freely (Lavalink v4 estable y activo) 🟢
-        {"uri": "http://freely.education:2333", "password": "youshallnotpass"},
-        # Nodo alternativo ultra confiable en puerto seguro 🪐
-        {"uri": "ssl://lavalink.yandere.today:443", "password": "youshallnotpass"}
+        # Nodo con IP directa y puerto estándar (Evita fallas de DNS de Render) 🟢
+        {"uri": "http://185.180.143.109:2333", "password": "youshallnotpass"},
+        # Segunda IP directa de respaldo 🪐
+        {"uri": "http://5.161.91.24:2333", "password": "youshallnotpass"}
     ]
 
     for config in nodos_config:
