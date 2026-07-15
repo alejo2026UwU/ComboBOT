@@ -234,12 +234,12 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
-        # Nodo con IP directa y puerto estándar (Evita fallas de DNS de Render) 🟢
-        {"uri": "http://185.180.143.109:2333", "password": "youshallnotpass"},
-        # Segunda IP directa de respaldo 🪐
-        {"uri": "http://5.161.91.24:2333", "password": "youshallnotpass"}
+        # Nodo público número 1 en estabilidad hoy en día 🟢
+        {"uri": "ssl://lavalink.ajie.app:443", "password": "youshallnotpass"},
+        # Nodo alternativo ultra rápido 🪐
+        {"uri": "http://lavalink.clorox.club:80", "password": "youshallnotpass"}
     ]
-
+    
     for config in nodos_config:
         # El resto de tu código del bucle va acá abajo...
         try:
