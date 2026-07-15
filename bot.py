@@ -25,9 +25,108 @@ CLIENT_ID = "1525280479476060210"
 CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "TU_CLIENT_SECRET_ACÁ")
 REDIRECT_URI = "https://combobot2026.onrender.com/callback"
 
-# CONFIGURACIÓN DE LOS JUEGOS
+# CONFIGURACIÓN DE LOS JUEGOS (1-100) 🥊
 JUEGOS_DETALLES = {
     1: {"name": "Duelo de Espadas", "hit": "te encajó una estocada letal", "crit": "¡te decapitó con un crítico medieval!"},
+    2: {"name": "Guerra de Nieve", "hit": "te encajó un bochazo helado en la frente", "crit": "¡te metió un hielo por la espalda! 🥶"},
+    3: {"name": "Combate Láser", "hit": "te quemó el chaleco con un disparo láser", "crit": "¡te desintegró con un disparo en la cabeza!"},
+    4: {"name": "Pelea de Almohadas", "hit": "te dio un almohadazo en la cara llena de plumas", "crit": "¡te noqueó con un golpe de almohada ultrasónico!"},
+    5: {"name": "Ring de Boxeo", "hit": "te metió un jab directo al mentón", "crit": "¡te mandó a la lona con un gancho al hígado!"},
+    6: {"name": "Fútbol Callejero", "hit": "te barrió de atrás limpiamente", "crit": "¡te metió un pelotazo en la cara y te dejó bizco!"},
+    7: {"name": "Duelo de Magos", "hit": "te lanzó un hechizo de chispas", "crit": "¡te lanzó un Avada Kedavra de cotillón!"},
+    8: {"name": "Batalla de Bandas", "hit": "te reventó los oídos con un solo de bajo", "crit": "¡te partió la guitarra eléctrica en la cabeza!"},
+    9: {"name": "Apocalipsis Zombie", "hit": "te arañó un brazo con fuerza", "crit": "¡te pegó un mordisco voraz en el cuello!"},
+    10: {"name": "Guerra de Globos de Agua", "hit": "te empapó la remera", "crit": "¡te explotó un globo gigante en toda la cara!"},
+    11: {"name": "Piratas del Caribe", "hit": "te rozó con su sable oxidado", "crit": "¡te mandó a dormir con los peces de un cañonazo!"},
+    12: {"name": "Carrera de Karts", "hit": "te tiró un caparazón verde", "crit": "¡te hizo volar por los aires con una bomba azul!"},
+    13: {"name": "Olimpiadas de Paintball", "hit": "te manchó la espalda de pintura roja", "crit": "¡te llenó la cara de pintura amarilla a quemarropa!"},
+    14: {"name": "Lucha Libre", "hit": "te hizo un candado a la cabeza", "crit": "¡se tiró desde la tercera cuerda y te aplastó!"},
+    15: {"name": "Invasión Alienígena", "hit": "te disparó con una pistola de plasma", "crit": "¡te abdujo y te desintegró en su nave espacial!"},
+    16: {"name": "Duelo del Lejano Oeste", "hit": "te rozó la oreja de un disparo", "crit": "¡te metió un balazo en el pecho al mediodía!"},
+    17: {"name": "Samuráis vs Ninjas", "hit": "te cortó con su katana veloz", "crit": "¡te clavó tres shurikens envenenados en el pecho!"},
+    18: {"name": "Batalla de Rap", "hit": "te tiró una rima floja sobre tu vieja", "crit": "¡te humilló con un freestyle épico frente a todos!"},
+    19: {"name": "Guerra de Comida", "hit": "te tiró un puré de papas tibio", "crit": "¡te estampó una torta de crema gigante en los ojos!"},
+    20: {"name": "Cyberpunk 2077", "hit": "te hackeó el implante del brazo", "crit": "¡te fundió el cerebro con un virus informático!"},
+    21: {"name": "Tirachinas de Barrio", "hit": "te pegó con una piedrita en el hombro", "crit": "¡te metió un gomerazo directo en la frente!"},
+    22: {"name": "Danza de Espadas", "hit": "te hizo un tajo leve en la pierna", "crit": "¡te atravesó el corazón con un florete!"},
+    23: {"name": "Ataque del Dragón", "hit": "te quemó las pestañas con un soplido", "crit": "¡te rostizó por completo con una llamarada de fuego!"},
+    24: {"name": "Estación Espacial", "hit": "te empujó al vacío exterior", "crit": "¡te cortó la manguera de oxígeno y moriste flotando!"},
+    25: {"name": "Esgrima Láser", "hit": "te quemó el hombro con plasma", "crit": "¡te cortó a la mitad como a un joven Padawan!"},
+    26: {"name": "Bolo Humano", "hit": "te empujó con una bola inflable", "crit": "¡te pasó por arriba como un camión gigante!"},
+    27: {"name": "Cazadores de Fantasmas", "hit": "te tiró un rayo de protones", "crit": "¡te atrapó en una trampa espectral para siempre!"},
+    28: {"name": "Lucha de Sumos", "hit": "te empujó fuera del tatami", "crit": "¡te aplastó con sus 200 kilos de pura pasión!"},
+    29: {"name": "Tenis de Mesa Caliente", "hit": "te metió un pelotazo en el estómago", "crit": "¡te reventó la cara de un smash endemoniado!"},
+    30: {"name": "Combate de Tanques", "hit": "te rozó con una barra de cañón", "crit": "¡hizo volar tu tanque por los aires de un impacto directo!"},
+    31: {"name": "Dinosaurios Hambrientos", "hit": "te mordió un tobillo con saña", "crit": "¡un T-Rex te tragó de un solo bocado!"},
+    32: {"name": "Karate Kid", "hit": "te pegó una patada baja en la espinilla", "crit": "¡te noqueó con la mítica patada de la grulla!"},
+    33: {"name": "Guerra de Nerfs", "hit": "te pegó un dardo de goma en la frente", "crit": "¡te vació todo el cargador de ráfaga en la cara!"},
+    34: {"name": "Carrera de Obstáculos", "hit": "te empujó contra una valla", "crit": "¡te tiró al pozo de barro con cocodrilos inflables!"},
+    35: {"name": "Duelo Cósmico", "hit": "te lanzó un meteorito diminuto", "crit": "¡te succionó dentro de un agujero negro supermasivo!"},
+    36: {"name": "Derrumbe de Jenga", "hit": "te tiró una madera pesada en el pie", "crit": "¡te tiró toda la torre gigante de madera encima!"},
+    37: {"name": "Fútbol de Mesa", "hit": "te metió un gol de carambola", "crit": "¡te hizo molinete y te rompió la muñeca del pelotazo!"},
+    38: {"name": "Ataque Tiburón", "hit": "te raspó con su piel de lija", "crit": "¡te arrancó una pierna de una sola dentellada!"},
+    39: {"name": "Tornado de Viento", "hit": "te levantó unos metros del suelo", "crit": "¡te mandó volando a otra provincia de un soplido!"},
+    40: {"name": "Pelea de Robots", "hit": "te dio un golpe de metal oxidado", "crit": "¡te aplastó con una prensa hidráulica de 50 toneladas!"},
+    41: {"name": "Ajedrez Violento", "hit": "te comió un peón de mala manera", "crit": "¡te partió el tablero de madera maciza en la cabeza!"},
+    42: {"name": "Gladiadores Romanos", "hit": "te lastimó el brazo con su tridente", "crit": "¡te lanzó a los leones hambrientos del Coliseo!"},
+    43: {"name": "Parque de Diversiones", "hit": "te chocó con un autito chocador", "crit": "¡te hizo salir volando de la montaña rusa sin cinturón!"},
+    44: {"name": "Arquería Elfica", "hit": "te rozó la mejilla con una flecha", "crit": "¡te clavó una flecha directamente entre ceja y ceja!"},
+    45: {"name": "Duelo de Coctelería", "hit": "te tiró un trago fuerte en la camisa", "crit": "¡te emborrachó con un shot flameante ultra potente!"},
+    46: {"name": "Guerra de Clanes", "hit": "te tiró una piedra con una catapulta", "crit": "¡te aplastó con un gigante furioso de nivel 10!"},
+    47: {"name": "Héroes de Mitología", "hit": "te golpeó con un escudo de bronce", "crit": "¡Zeus te fulminó con un rayo directo desde el Olimpo!"},
+    48: {"name": "Granja Loca", "hit": "te picó una gallina rabiosa", "crit": "¡te pasó por encima con un tractor fuera de control!"},
+    49: {"name": "Simulador de Vuelo", "hit": "te hizo marear con una maniobra", "crit": "¡se estrelló directo contra tu avión de frente!"},
+    50: {"name": "Lucha de Cuerdas", "hit": "te arrastró un metro por el pasto", "crit": "¡te hizo morder el polvo contra el suelo de cemento!"},
+    51: {"name": "Minicraft PvP", "hit": "te pegó con una espada de madera", "crit": "¡te tiró un Creeper cargado en los pies!"},
+    52: {"name": "Superhéroes", "hit": "te tiró un rayo de hielo leve", "crit": "¡te metió un puñetazo que te mandó al espacio exterior!"},
+    53: {"name": "Invasión de Abejas", "hit": "te picó una abeja en la oreja", "crit": "¡te atacó un enjambre furioso y te desfiguró la cara!"},
+    54: {"name": "Esquí Extremo", "hit": "te tiró una bola de nieve pesada", "crit": "¡te sepultó bajo una avalancha gigante de nieve!"},
+    55: {"name": "Bowling Salvaje", "hit": "te golpeó un pino de madera", "crit": "¡te metió un strike directo en las piernas!"},
+    56: {"name": "Pelea de Gatos", "hit": "te metió un rasguño molesto", "crit": "¡te saltó a la cara tirándote del pelo con furia!"},
+    57: {"name": "Templo Perdido", "hit": "te rozó un dardo envenenado", "crit": "¡te aplastó una roca esférica gigante de piedra!"},
+    58: {"name": "Submarino de Guerra", "hit": "te sacudió con una onda expansiva", "crit": "¡te hundió por completo con un torpedo dirigido!"},
+    59: {"name": "Festival de Globos", "hit": "te tiró harina en la remera", "crit": "¡te tiró un baldazo de pintura asfáltica en la cabeza!"},
+    60: {"name": "Pesadilla en la Cocina", "hit": "te tiró una sartén caliente", "crit": "¡te tiró aceite hirviendo directo en la cara!"},
+    61: {"name": "Duelo de Chistes", "hit": "te contó un chiste bastante malo", "crit": "¡te contó un chiste tan malo que te dio un paro cardíaco!"},
+    62: {"name": "Vikingos al Ataque", "hit": "te golpeó con el mango de su hacha", "crit": "¡te partió al medio de un hachazo digno de Odín!"},
+    63: {"name": "Guerra de Papel", "hit": "te tiró un bollito de papel mojado", "crit": "¡te cortó el dedo con el borde de una hoja A4 nueva!"},
+    64: {"name": "Carrera de Caballos", "hit": "te salpicó barro en la cara", "crit": "¡te pasó por encima con el caballo herrado!"},
+    65: {"name": "Volcán Activo", "hit": "te tiró una ceniza ardiente", "crit": "¡te empujó directo al río de lava hirviendo!"},
+    66: {"name": "Golf de Choque", "hit": "te rozó con la pelota de golf", "crit": "¡te pegó un palazo de metal directo en los dientes!"},
+    67: {"name": "Duelo de Guitarra", "hit": "te desafinó una cuerda", "crit": "¡te reventó el tímpano izquierdo de un acople eléctrico!"},
+    68: {"name": "Supermercado Loco", "hit": "te chocó con el changuito de compras", "crit": "¡te aplastó con una pila gigante de latas de conserva!"},
+    69: {"name": "Playa de Cangrejos", "hit": "te pellizcó un dedo del pie", "crit": "¡un cangrejo gigante te agarró de la nariz con su pinza!"},
+    70: {"name": "Lluvia de Meteoritos", "hit": "te cayó una piedra caliente en el hombro", "crit": "¡te cayó un meteorito del tamaño de una casa encima!"},
+    71: {"name": "Duelo de Sombras", "hit": "te asustó con una mueca", "crit": "¡te robó el alma y te dejó como cáscara vacía!"},
+    72: {"name": "Caza del Tesoro", "hit": "te empujó en un pozo de arena", "crit": "¡te encerró adentro del cofre del tesoro sin aire!"},
+    73: {"name": "Pelea Medieval", "hit": "te golpeó con su mazo de madera", "crit": "¡te aplastó la cabeza con una maza de picos de hierro!"},
+    74: {"name": "Karate con Tablas", "hit": "te golpeó con una astilla", "crit": "¡te partió una tabla de pino macizo en la cabeza!"},
+    75: {"name": "Tornado de Fuego", "hit": "te chamuscó un mechón de pelo", "crit": "¡te succionó y te rostizó en segundos en el aire!"},
+    76: {"name": "Pelea de Canguros", "hit": "te empujó con las manos", "crit": "¡te metió un doble patada voladora en el pecho!"},
+    77: {"name": "Duelo de Puntería", "hit": "te pegó un balín en el brazo", "crit": "¡te metió un tiro en todo el centro de la frente!"},
+    78: {"name": "Atrapados en el Ascensor", "hit": "te pisó el pie sin querer", "crit": "¡cortó los cables del ascensor y cayeron al vacío!"},
+    79: {"name": "Ataque de Abejorros", "hit": "te picó un abejorro molesto", "crit": "¡te persiguió una colmena entera hasta el cansancio!"},
+    80: {"name": "Avalancha de Piedras", "hit": "te pegó una piedrita en el casco", "crit": "¡te pasó por encima una roca de 3 toneladas!"},
+    81: {"name": "Hockey sobre Hielo", "hit": "te empujó contra la pared de acrílico", "crit": "¡te metió un palazo de hockey directo en la mandíbula!"},
+    82: {"name": "Combate Pokémon", "hit": "te atacó con un placaje débil", "crit": "¡te metió un hiperrayo crítico que te debilitó al instante!"},
+    83: {"name": "Tiro al Blanco Humano", "hit": "te rozó un dardo metálico", "crit": "¡te clavó un dardo directo en el ojo derecho!"},
+    84: {"name": "Guerra de Chupetines", "hit": "te tiró un caramelo duro", "crit": "¡te metió un chupetín entero por la garganta!"},
+    85: {"name": "Duelo de Pirómanos", "hit": "te quemó la manga con un encendedor", "crit": "¡te tiró una bomba molotov directa a los pies!"},
+    86: {"name": "La Mansión del Terror", "hit": "te dio un susto leve por la espalda", "crit": "¡te mató del susto un fantasma que salió del placard!"},
+    87: {"name": "Invasión de Ratas", "hit": "te mordió una bota de goma", "crit": "¡te devoró una horda de ratas de alcantarilla!"},
+    88: {"name": "Soga Elástica", "hit": "te tiró un latigazo en la pierna", "crit": "¡se cortó la soga y te pegó en toda la cara con fuerza!"},
+    89: {"name": "Duelo de Escobas", "hit": "te pegó un escobazo en los pies", "crit": "¡te partió el palo de madera de la escoba en la espalda!"},
+    90: {"name": "Batalla de Tanques de Agua", "hit": "te tiró un chorro leve en el pecho", "crit": "¡te tiró un chorrazo a presión que te tiró al piso!"},
+    91: {"name": "Boxeo de Canguros", "hit": "te pegó un gancho débil", "crit": "¡te metió un KO con sus guantes gigantes de cuero!"},
+    92: {"name": "Lluvia de Yunque", "hit": "te cayó un tornillo pesado", "crit": "¡te cayó un yunque de 200 kilos estilo Correcaminos!"},
+    93: {"name": "Apocalipsis Nuclear", "hit": "te afectó la radiación leve", "crit": "¡te cayó una ojiva nuclear directa en la cabeza!"},
+    94: {"name": "Guerra de Naranjas", "hit": "te pegó una naranja ácida", "crit": "¡te reventó una naranja podrida directo en los ojos!"},
+    95: {"name": "Duelo de Alquimistas", "hit": "te tiró una poción de humo molesto", "crit": "¡te tiró una poción de ácido que te derritió la armadura!"},
+    96: {"name": "Esgrima de Luz", "hit": "te rozó el brazo con plasma", "crit": "¡te cortó en pedacitos con un sable de luz doble!"},
+    97: {"name": "Pelea de Osos", "hit": "te dio un zarpazo leve", "crit": "¡un oso grizzly te dio un abrazo mortal rompehuesos!"},
+    98: {"name": "Tiroteo de Nieve", "hit": "te tiró una bola de hielo duro", "crit": "¡te sepultó bajo un alud gigante congelado!"},
+    99: {"name": "Caza de Dragones", "hit": "te quemó el escudo de madera", "crit": "¡te tragó entero el dragón negro de la montaña!"},
+    100: {"name": "Duelo del Fin del Mundo", "hit": "te rozó un rayo apocalíptico", "crit": "¡te borró de la existencia con un Big Bang cuántico!"}
 }
 
 # ==============================================================================
@@ -83,8 +182,55 @@ class JuegoMasivoView(discord.ui.View):
             self.turno, self.rival = self.rival, self.turno
         await self.actualizar(inter, txt)
 
+
+# ==============================================================================
+# 🎮 VISTA INTERACTIVA PARA EL COMANDO /HELP_GAMES
+# ==============================================================================
+class HelpGamesView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=120)
+        self.pagina_actual = 1
+        self.max_paginas = 4
+
+    def generar_embed(self):
+        embed = discord.Embed(
+            title="🎮 Lista Completa de Juegos (1-100)",
+            description="¡Elegí el número perfecto para desafiar a tu rival en `/juego`! 🥊✨\n",
+            color=discord.Color.from_rgb(0, 240, 255)
+        )
+        
+        inicio = (self.pagina_actual - 1) * 25 + 1
+        fin = self.pagina_actual * 25
+        
+        texto_juegos = ""
+        for i in range(inicio, fin + 1):
+            if i in JUEGOS_DETALLES:
+                texto_juegos += f"**`#{i:02d}`** — {JUEGOS_DETALLES[i]['name']}\n"
+        
+        embed.add_field(name=f"📖 Página {self.pagina_actual} de {self.max_paginas}", value=texto_juegos, inline=False)
+        embed.set_footer(text="ComboBOT 2026 | Desafía con /juego [numero] [@rival] 🛸")
+        return embed
+
+    @discord.ui.button(label="◀️ Anterior", style=discord.ButtonStyle.secondary)
+    async def anterior_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        if self.pagina_actual > 1:
+            self.pagina_actual -= 1
+            await inter.response.edit_message(embed=self.generar_embed(), view=self)
+        else:
+            await inter.response.send_message("❌ Ya estás en la primera página.", ephemeral=True)
+
+    @discord.ui.button(label="Siguiente ▶️", style=discord.ButtonStyle.primary)
+    async def siguiente_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        if self.pagina_actual < self.max_paginas:
+            self.pagina_actual += 1
+            await inter.response.edit_message(embed=self.generar_embed(), view=self)
+        else:
+            await inter.response.send_message("❌ Ya estás en la última página.", ephemeral=True)
+
+
 # ==============================================================================
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
+# ==============================================================================
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
@@ -100,7 +246,6 @@ async def conectar_node():
         try:
             print(f"🔄 Intentando conectar al nodo: {config['uri']}...", flush=True)
             
-            # Configuramos el nodo. Wavelink v3 requiere la URI limpia.
             node = wavelink.Node(
                 uri=config["uri"], 
                 password=config["password"],
@@ -125,6 +270,23 @@ async def conectar_node():
 @bot.event
 async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
     print(f"✅ Nodo de Wavelink listo: {payload.node.identifier}", flush=True)
+
+@bot.event
+async def on_ready():
+    print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
+    try:
+        sincronizados = await bot.tree.sync()
+        print(f"🔄 Sincronizados {len(sincronizados)} comandos de barra.", flush=True)
+    except Exception as e:
+        print(f"❌ Error al sincronizar: {e}", flush=True)
+    
+    activity = discord.Activity(
+        type=discord.ActivityType.watching, 
+        name="¡ComboBOT Premium! 🚀 | /help 🛸"
+    )
+    await bot.change_presence(activity=activity)
+    await conectar_node()
+
 
 # ==============================================================================
 # 🎮 VISTA DE BOTONES PARA EL REPRODUCTOR (ESTILO UZOX IDÉNTICO)
@@ -307,7 +469,7 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
 
 
 # ==============================================================================
-# 🎮 COMANDO /PLAY ÚNICO CON AUTOCOMPLETADO NATIVO DE WAVELINK 🛡️
+# 🎮 COMANDOS DE BARRA (MÚSICA, JUEGOS Y SOPORTE)
 # ==============================================================================
 @bot.tree.command(name="play", description="Busca y reproduce música de YouTube, Spotify o SoundCloud 🎵")
 @discord.app_commands.describe(
@@ -336,7 +498,6 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
         return []
     try:
         node = wavelink.Pool.get_node()
-        # Si el nodo no está conectado todavía, no buscamos en internet para evitar que se tilde
         if not node:
             return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
             
@@ -352,7 +513,6 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
     return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
     
 
-# --- COMANDO STOP ---
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
 async def stop(interaction: discord.Interaction):
     player: wavelink.Player = interaction.guild.voice_client
@@ -362,8 +522,47 @@ async def stop(interaction: discord.Interaction):
     await player.disconnect()
     await interaction.response.send_message("⏹️ Música detenida. ComboBOT fuera del canal. 🛸")
 
+
+# --- COMANDO /JUEGO NATIVO 🥊 ---
+@bot.tree.command(name="juego", description="Desafía a un amigo a un juego interactivo de la lista 🥊")
+@discord.app_commands.describe(
+    numero="Elegí un número de juego de la lista (1-100) 🕹️",
+    rival="Mencioná a tu oponente para el duelo 🎯"
+)
+async def juego(interaction: discord.Interaction, numero: int, rival: discord.User):
+    if rival.bot:
+        return await interaction.response.send_message("❌ No podés desafiar a un bot. ¡Buscate un rival de verdad! 🤖", ephemeral=True)
+    
+    if rival.id == interaction.user.id:
+        return await interaction.response.send_message("❌ No podés jugar contra vos mismo... Sería muy triste. 😢", ephemeral=True)
+
+    if numero not in JUEGOS_DETALLES:
+        return await interaction.response.send_message("❌ Ese número de juego no existe. ¡Usa `/help_games` para ver todos! 🎮", ephemeral=True)
+
+    config = JUEGOS_DETALLES[numero]
+    view = JuegoMasivoView(interaction.user, rival, numero, config)
+    
+    embed = discord.Embed(
+        title=f"🕹️ JUEGO #{numero}: {config['name']}", 
+        description=f"⚔️ **{interaction.user.mention}** acaba de desafiar a **{rival.mention}**.\n\n**Turno de atacar:** {interaction.user.mention}",
+        color=discord.Color.red()
+    )
+    embed.add_field(name=f"🥊 {interaction.user.name}", value="❤️ **HP:** `100/100`", inline=True)
+    embed.add_field(name=f"🥊 {rival.name}", value="❤️ **HP:** `100/100`", inline=True)
+    embed.set_footer(text="¡Que gane el mejor! 💥")
+
+    await interaction.response.send_message(embed=embed, view=view)
+
+
+# --- COMANDO /HELP_GAMES NATIVO 🎮 ---
+@bot.tree.command(name="help_games", description="Muestra la lista interactiva de los 100 juegos disponibles 🕹️")
+async def help_games(interaction: discord.Interaction):
+    view = HelpGamesView()
+    await interaction.response.send_message(embed=view.generar_embed(), view=view)
+
+
 # ==============================================================================
-# 🛸 COMANDO DE AYUDA CON BOTÓN DE INVITACIÓN DIRECTA 🚀
+# 🛸 COMANDOS DE AYUDA Y SOPORTE
 # ==============================================================================
 class HelpButtons(discord.ui.View):
     def __init__(self):
@@ -400,6 +599,7 @@ async def help_slash(interaction: discord.Interaction):
         name="🎮 Entretenimiento e Interacción", 
         value=(
             "• `/juego [1-100] [@rival]` - Desafía a un amigo a un juego interactivo 🥊\n"
+            "• `/help_games` - Mira el catálogo de los 100 juegos 🕹️\n"
             "• `/mine` - Minería espacial para conseguir StarChips 🌌\n"
             "• `/cyber_roulette` - Probá tu suerte en el azar cuántico 🎰"
         ), 
@@ -409,7 +609,6 @@ async def help_slash(interaction: discord.Interaction):
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
     await interaction.response.send_message(embed=embed, view=HelpButtons())
 
-# --- CENTRAL DE AYUDA SECUNDARIA (WEB) ---
 @bot.tree.command(name="help_cyber", description="Muestra la central de comandos del bot 🛸")
 async def help_cyber_slash(interaction: discord.Interaction):
     embed = discord.Embed(
@@ -422,13 +621,16 @@ async def help_cyber_slash(interaction: discord.Interaction):
         color=discord.Color.from_rgb(0, 240, 255)
     )
     
-    embed.add_field(name="🎮 Juegos Multijugador", value="`/juego [1-100] [@rival]`, `/mine`, `/cyber_roulette` 🥊", inline=False)
+    embed.add_field(name="🎮 Juegos Multijugador", value="`/juego [1-100] [@rival]`, `/help_games`, `/mine`, `/cyber_roulette` 🥊", inline=False)
     embed.add_field(name="🎵 Sistema de Música", value="`/play`, `/stop` 🎶", inline=False)
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
     
     await interaction.response.send_message(embed=embed)
 
+
+# ==============================================================================
 # --- COMANDOS EXTRAS DE ECONOMÍA ---
+# ==============================================================================
 @bot.tree.command(name="mine", description="Minería de datos espacial 💎")
 async def mine(interaction: discord.Interaction):
     recompensa = random.randint(120, 550)
@@ -440,6 +642,7 @@ async def cyber_roulette(interaction: discord.Interaction, apuesta: int = 200):
         await interaction.response.send_message(f"🎰 **{interaction.user.name}** ganó **{apuesta * 2} StarChips** en la ruleta! 🎉💥")
     else:
         await interaction.response.send_message(f"📉 Mala suerte, perdiste tus **{apuesta} StarChips**. 😢💸")
+
 
 # ==============================================================================
 # 6. MULTIHILO INTERNO SEGURO EN SEGUNDO PLANO PARA RENDER
