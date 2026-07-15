@@ -233,14 +233,12 @@ class HelpGamesView(discord.ui.View):
 # ==============================================================================
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
-    nodos_config = [
-        # 1. TU PROPIO NODO EN RENDER (Con wss:// para que conecte de una) 💻
-        {"uri": "wss://mi-lavalink.onrender.com", "password": "youshallnotpass"},
-        
-        # 2. Nodo público alternativo (De respaldo por si tu Render duerme) 🛸
+        nodos_config = [
+        # Nodo público ultra estable con audio activo 🟢
         {"uri": "ssl://lavalink.koat.dev:443", "password": "youshallnotpass"},
+        # Nodo secundario de respaldo 🪐
+        {"uri": "ssl://lavalink.freely.education:443", "password": "youshallnotpass"}
     ]
-
     for config in nodos_config:
         try:
             print(f"🔄 Intentando conectar al nodo: {config['uri']}...", flush=True)
