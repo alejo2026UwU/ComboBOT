@@ -233,13 +233,15 @@ class HelpGamesView(discord.ui.View):
 # ==============================================================================
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
-nodos_config = [
+    nodos_config = [
         # Nodo de Freely (Súper compatible con Wavelink v4) 🟢
         {"uri": "ssl://lavalink.freely.education:443", "password": "youshallnotpass"},
         # Nodo de Backup estable 🪐
         {"uri": "ssl://lava.link:443", "password": "youshallnotpass"}
     ]
+
     for config in nodos_config:
+        # El resto de tu código del bucle va acá abajo...
         try:
             print(f"🔄 Intentando conectar al nodo: {config['uri']}...", flush=True)
             
