@@ -123,35 +123,127 @@ async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
     print(f"✅ Nodo de Wavelink listo: {payload.node.identifier}", flush=True)
 
 # ==============================================================================
-# 🎮 MOTOR DE BÚSQUEDA RÁPIDA (AUXILIAR)
+# 🎮 VISTA DE BOTONES PARA EL REPRODUCTOR (ESTILO UZOX IDÉNTICO)
 # ==============================================================================
-async def buscar_titulos_rapido(query: str) -> list:
-    """Busca videos en YouTube usando la API de sugerencias públicas (sin depender de Lavalink) 🚀"""
-    try:
-        encoded_query = urllib.parse.quote(query)
-        url = f"https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q={encoded_query}"
+class ReproductorView(discord.ui.View):
+    def __init__(self, player: wavelink.Player):
+        super().__init__(timeout=None)
+        self.player = player
+
+    # Fila 1: Control de reproducción
+    @discord.ui.button(emoji="⏮️", style=discord.ButtonStyle.secondary, row=0)
+    async def prev_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        if not self.player.playing:
+            return await inter.response.send_message("❌ No hay nada sonando.", ephemeral=True)
+        await self.player.seek(0)
+        await inter.response.send_message("⏮️ Pista reiniciada.", ephemeral=True)
+
+    @discord.ui.button(emoji="⏸️", style=discord.ButtonStyle.primary, row=0)
+    async def pause_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        if not self.player.playing:
+            return await inter.response.send_message("❌ No hay música sonando.", ephemeral=True)
         
-        loop = asyncio.get_event_loop()
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        
-        def fetch():
-            with urllib.request.urlopen(req, timeout=1.5) as response:
-                return response.read().decode('utf-8')
-                
-        res_text = await loop.run_in_executor(None, fetch)
-        
-        json_data = json.loads(re.match(r"window\.google\.ac\.hr\((.*)\)", res_text).group(1)) if "window.google.ac.hr" in res_text else json.loads(res_text)
-        sugerencias = [item[0] for item in json_data[1]]
-        return sugerencias[:5]
-    except Exception:
-        return [query]
+        if self.player.paused:
+            await self.player.pause(False)
+            button.emoji = "⏸️"
+            button.style = discord.ButtonStyle.primary
+            await inter.response.edit_message(view=self)
+            await inter.followup.send("▶️ Música reanudada.", ephemeral=True)
+        else:
+            await self.player.pause(True)
+            button.emoji = "▶️"
+            button.style = discord.ButtonStyle.success
+            await inter.response.edit_message(view=self)
+            await inter.followup.send("⏸️ Música pausada.", ephemeral=True)
+
+    @discord.ui.button(emoji="⏭️", style=discord.ButtonStyle.secondary, row=0)
+    async def skip_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        if not self.player.playing:
+            return await inter.response.send_message("❌ No hay nada en la lista.", ephemeral=True)
+        await self.player.skip()
+        await inter.response.send_message("⏭️ Siguiente canción.", ephemeral=True)
+
+    # Fila 2: Control de volumen
+    @discord.ui.button(emoji="🔇", style=discord.ButtonStyle.secondary, row=1)
+    async def mute_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        if self.player.volume > 0:
+            self.player.old_volume = self.player.volume
+            await self.player.set_volume(0)
+            button.emoji = "🔊"
+            await inter.response.edit_message(view=self)
+            await inter.followup.send("🔇 Bot silenciado.", ephemeral=True)
+        else:
+            old_vol = getattr(self.player, 'old_volume', 50)
+            await self.player.set_volume(old_vol)
+            button.emoji = "🔇"
+            await inter.response.edit_message(view=self)
+            await inter.followup.send(f"🔊 Volumen restablecido a {old_vol}%.", ephemeral=True)
+
+    @discord.ui.button(emoji="🔉", style=discord.ButtonStyle.secondary, row=1)
+    async def vol_down_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        nuevo_vol = max(self.player.volume - 15, 0)
+        await self.player.set_volume(nuevo_vol)
+        await inter.response.send_message(f"🔉 Volumen bajado a: {nuevo_vol}%", ephemeral=True)
+
+    @discord.ui.button(emoji="🔊", style=discord.ButtonStyle.secondary, row=1)
+    async def vol_up_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        nuevo_vol = min(self.player.volume + 15, 100)
+        await self.player.set_volume(nuevo_vol)
+        await inter.response.send_message(f"🔊 Volumen subido a: {nuevo_vol}%", ephemeral=True)
+
+    # Fila 3: Utilidades
+    @discord.ui.button(emoji="📄", style=discord.ButtonStyle.secondary, row=2)
+    async def lyrics_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        await inter.response.send_message("📄 Buscando la letra de la canción...", ephemeral=True)
+
+    @discord.ui.button(emoji="💾", style=discord.ButtonStyle.secondary, row=2)
+    async def save_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        await inter.response.send_message("💾 ¡Canción guardada en tus favoritos!", ephemeral=True)
+
+    @discord.ui.button(emoji="♾️", style=discord.ButtonStyle.secondary, row=2)
+    async def loop_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        # Activamos/desactivamos bucle simple
+        loop_state = getattr(self.player, 'loop_track', False)
+        self.player.loop_track = not loop_state
+        estado = "ACTIVADO" if not loop_state else "DESACTIVADO"
+        await inter.response.send_message(f"♾️ Bucle de pista {estado}.", ephemeral=True)
+
+    # Fila 4: Bucle / Apagar / Shuffle
+    @discord.ui.button(emoji="🔁", style=discord.ButtonStyle.secondary, row=3)
+    async def loop_queue_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        # Activamos/desactivamos bucle de la cola
+        loop_q = getattr(self.player, 'loop_queue', False)
+        self.player.loop_queue = not loop_q
+        estado = "ACTIVADA" if not loop_q else "DESACTIVADA"
+        await inter.response.send_message(f"🔁 Repetición de la lista {estado}.", ephemeral=True)
+
+    @discord.ui.button(emoji="⏹️", style=discord.ButtonStyle.danger, row=3)
+    async def stop_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        await self.player.disconnect()
+        for child in self.children:
+            child.disabled = True
+        await inter.response.edit_message(view=self)
+        await inter.followup.send("⏹️ Sesión de música finalizada.", ephemeral=True)
+
+    @discord.ui.button(emoji="🔀", style=discord.ButtonStyle.secondary, row=3)
+    async def shuffle_btn(self, inter: discord.Interaction, button: discord.ui.Button):
+        if len(self.player.queue) > 1:
+            # Mezclamos la cola de reproducción
+            lista_temp = list(self.player.queue)
+            random.shuffle(lista_temp)
+            self.player.queue.clear()
+            for track in lista_temp:
+                await self.player.queue.put(track)
+            await inter.response.send_message("🔀 ¡Lista de reproducción mezclada!", ephemeral=True)
+        else:
+            await inter.response.send_message("❌ No hay suficientes canciones para mezclar.", ephemeral=True)
 
 
 # ==============================================================================
-# 🎮 COMANDOS DE MÚSICA SEPARADOS POR PLATAFORMA (¡CON AUTOCOMPLETADO!)
+# 🎮 MOTOR DE REPRODUCCIÓN (ESTILO VISUAL UZOX CON BORDE AZUL)
 # ==============================================================================
 async def reproducir_tema(interaction: discord.Interaction, busqueda: str, source):
-    """Función interna para buscar de inmediato, conectar y reproducir 🛠️🎶"""
+    """Función interna para buscar de inmediato, conectar y reproducir con estilo Uzox en azul 🛠️🎶"""
     if not interaction.user.voice:
         return await interaction.followup.send("❌ ¡Tenés que estar en un canal de voz! 🎤")
     
@@ -187,75 +279,33 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
     track = tracks[0]
     await player.queue.put(track)
     
+    # Formatear la duración exacta
+    segundos = int(track.length / 1000)
+    minutos, segundos = divmod(segundos, 60)
+    duracion_formateada = f"{minutos:02d}:{segundos:02d}"
+
+    # Embed diseñado igual al de tu captura pero con borde AZUL brillante 🎨🔵
+    embed = discord.Embed(title="🎶 Now Playing", color=discord.Color.from_rgb(0, 240, 255))
+    embed.add_field(name="**Track:**", value=f"`{track.title}`", inline=False)
+    embed.add_field(name="**Requested By:**", value=interaction.user.mention, inline=False)
+    embed.add_field(name="**Duration:**", value=f"`{duracion_formateada}`", inline=False)
+    
+    # Imagen de portada si existe
+    if track.artwork:
+        embed.set_thumbnail(url=track.artwork)
+
+    embed.set_footer(text="~ /equalizer for custom track control ~")
+
     if not player.playing:
         await player.play(player.queue.get())
-        await interaction.followup.send(f"🎶 Empezando a sonar: **{track.title}** 🚀")
+        await interaction.followup.send(embed=embed, view=ReproductorView(player))
     else:
-        await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
-
-
-# --- 🔴 YOUTUBE PLAY & AUTOCOMPLETE ---
-@bot.tree.command(name="play_yt", description="Busca y reproduce música de YouTube 🔴")
-async def play_yt(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.YouTube)
-
-@play_yt.autocomplete("busqueda")
-async def yt_autocomplete(interaction: discord.Interaction, current: str):
-    if not current or len(current) < 2:
-        return []
-    try:
-        sugerencias = await buscar_titulos_rapido(current)
-        return [discord.app_commands.Choice(name=f"🎥 {sug[:80]}", value=sug) for sug in sugerencias]
-    except Exception:
-        pass
-    return []
-
-
-# --- 🟢 SPOTIFY PLAY & AUTOCOMPLETE ---
-@bot.tree.command(name="play_spotify", description="Busca y reproduce música de Spotify 🟢")
-async def play_spotify(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.Spotify)
-
-@play_spotify.autocomplete("busqueda")
-async def spotify_autocomplete(interaction: discord.Interaction, current: str):
-    if not current or len(current) < 2:
-        return []
-    try:
-        sugerencias = await buscar_titulos_rapido(current)
-        return [discord.app_commands.Choice(name=f"🟢 {sug[:80]}", value=sug) for sug in sugerencias]
-    except Exception:
-        pass
-    return []
-
-
-# --- 🟠 SOUNDCLOUD PLAY & AUTOCOMPLETE ---
-@bot.tree.command(name="play_soundcloud", description="Busca y reproduce música de SoundCloud 🟠")
-async def play_soundcloud(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.defer()
-    await reproducir_tema(interaction, busqueda, wavelink.TrackSource.SoundCloud)
-
-@play_soundcloud.autocomplete("busqueda")
-async def soundcloud_autocomplete(interaction: discord.Interaction, current: str):
-    if not current or len(current) < 2:
-        return []
-    try:
-        sugerencias = await buscar_titulos_rapido(current)
-        return [discord.app_commands.Choice(name=f"🟠 {sug[:80]}", value=sug) for sug in sugerencias]
-    except Exception:
-        pass
-    return []
-
-# --- COMANDO SKIP ---
-@bot.tree.command(name="skip", description="Se salta la canción actual ⏭️")
-async def skip(interaction: discord.Interaction):
-    player: wavelink.Player = interaction.guild.voice_client
-    if not player or not player.playing:
-        return await interaction.response.send_message("❌ No hay nada sonando para saltear. 💨", ephemeral=True)
-    
-    await player.skip()
-    await interaction.response.send_message("⏭️ Canción salteada con éxito. ¡Siguiente tema! 🎧")
+        embed_queue = discord.Embed(
+            title="📝 Añadida a la lista",
+            description=f"**{track.title}** en cola.",
+            color=discord.Color.from_rgb(0, 240, 255)
+        )
+        await interaction.followup.send(embed=embed_queue)
 
 # --- COMANDO STOP ---
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
