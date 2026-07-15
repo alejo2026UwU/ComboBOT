@@ -86,16 +86,19 @@ class JuegoMasivoView(discord.ui.View):
 # ==============================================================================
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 async def conectar_node():
-    """Conecta a tu propio servidor de Lavalink configurado 🛡️🎵"""
+    """Conecta a un servidor de Lavalink público y ultra estable 🛡️🎵"""
     try:
-        # ⚠️ IMPORTANTE: Usá 'wss://' en lugar de 'https://' para WebSockets estables
-        # Reemplazá 'tu-lavalink-real.onrender.com' por el nombre real de tu servicio en Render
-        node = wavelink.Node(uri="https://mi-lavalink.onrender.com", password="youshallnotpass")
+        # Usamos un nodo público con soporte SSL que siempre está activo 🟢
+        node = wavelink.Node(
+            uri="ssl://lavalink.liara.run:443", 
+            password="youshallnotpass",
+            inactive_player_timeout=300
+        )
         await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Lavalink] ¡Conectado exitosamente al nodo nativo! 🎸", flush=True)
+        print("🎵 [Lavalink] ¡Conectado exitosamente al nodo público! 🎸", flush=True)
     except Exception as e:
-        print(f"⚠️ [Lavalink Alert] Falló la conexión: {e}", flush=True)
-
+        print(f"⚠️ [Lavalink Alert] Error al intentar conectar: {e}", flush=True)
+    
 @bot.event
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
