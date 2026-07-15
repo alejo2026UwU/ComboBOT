@@ -234,10 +234,10 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
-        # Nodo público ultra estable (Puerto 80 sin SSL para evitar fallas de websocket) 🟢
-        {"uri": "http://lava.link:80", "password": "youshallnotpass"},
-        # Nodo secundario alternativo (De respaldo) 🪐
-        {"uri": "ssl://lavalink.panther.hosting:443", "password": "youshallnotpass"}
+        # Nodo con IP directa (¡Sin DNS ni SSL que fallen!) 🟢
+        {"uri": "http://188.166.196.11:80", "password": "youshallnotpass"},
+        # Alternativa súper limpia por puerto 8080 🪐
+        {"uri": "http://lava.link:8080", "password": "youshallnotpass"}
     ]
 
     for config in nodos_config:
