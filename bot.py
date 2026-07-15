@@ -307,6 +307,44 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
         )
         await interaction.followup.send(embed=embed_queue)
 
+
+# ==============================================================================
+# 🎮 COMANDO /PLAY ÚNICO CON AUTOCOMPLETADO Y SELECCIÓN DE PLATAFORMA
+# ==============================================================================
+@bot.tree.command(name="play", description="Busca y reproduce música de YouTube, Spotify o SoundCloud 🎵")
+@discord.app_commands.describe(
+    busqueda="Nombre de la canción o enlace directo 🔗",
+    plataforma="Elegí dónde buscar (opcional, por defecto YouTube) 💿"
+)
+@discord.app_commands.choices(plataforma=[
+    discord.app_commands.Choice(name="🔴 YouTube", value="youtube"),
+    discord.app_commands.Choice(name="🟢 Spotify", value="spotify"),
+    discord.app_commands.Choice(name="🟠 SoundCloud", value="soundcloud")
+])
+async def play(interaction: discord.Interaction, busqueda: str, plataforma: str = "youtube"):
+    await interaction.response.defer()
+    
+    # Mapeamos la elección a las fuentes de Wavelink
+    source = wavelink.TrackSource.YouTube
+    if plataforma == "spotify":
+        source = wavelink.TrackSource.Spotify
+    elif plataforma == "soundcloud":
+        source = wavelink.TrackSource.SoundCloud
+        
+    await reproducir_tema(interaction, busqueda, source)
+
+@play.autocomplete("busqueda")
+async def play_autocomplete(interaction: discord.Interaction, current: str):
+    if not current or len(current) < 2:
+        return []
+    try:
+        # Usa nuestra función rápida externa para que no se quede recalculando
+        sugerencias = await buscar_titulos_rapido(current)
+        return [discord.app_commands.Choice(name=f"🎵 {sug[:80]}", value=sug) for sug in sugerencias]
+    except Exception:
+        pass
+    return []
+
 # --- COMANDO STOP ---
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
 async def stop(interaction: discord.Interaction):
