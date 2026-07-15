@@ -239,7 +239,6 @@ async def conectar_node():
         # Nodo secundario de respaldo 🪐
         {"uri": "ssl://lavalink.freely.education:443", "password": "youshallnotpass"}
     ]
-    ]
     for config in nodos_config:
         try:
             print(f"🔄 Intentando conectar al nodo: {config['uri']}...", flush=True)
