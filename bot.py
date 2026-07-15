@@ -85,12 +85,12 @@ class JuegoMasivoView(discord.ui.View):
 
 # ==============================================================================
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
-# ==============================================================================
 async def conectar_node():
     """Conecta a tu propio servidor de Lavalink configurado 🛡️🎵"""
     try:
-        # ⚠️ IMPORTANTE: Reemplazá 'https://mi-lavalink.onrender.com' por tu URL real de Render
-        node = wavelink.Node(uri="https://mi-lavalink.onrender.com", password="youshallnotpass")
+        # ⚠️ IMPORTANTE: Usá 'wss://' en lugar de 'https://' para WebSockets estables
+        # Reemplazá 'tu-lavalink-real.onrender.com' por el nombre real de tu servicio en Render
+        node = wavelink.Node(uri="wss://tu-lavalink-real.onrender.com", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
         print("🎵 [Lavalink] ¡Conectado exitosamente al nodo nativo! 🎸", flush=True)
     except Exception as e:
@@ -328,19 +328,22 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
-        # Buscamos usando el método global que es compatible con Wavelink 3.0+ ⚡
+        node = wavelink.Pool.get_node()
+        # Si el nodo no está conectado todavía, no buscamos en internet para evitar que se tilde
+        if not node:
+            return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
+            
         tracks = await asyncio.wait_for(
             wavelink.Playable.search(f"ytsearch:{current}"),
             timeout=1.2
         )
         if tracks:
-            # Mandamos las sugerencias al menú de Discord
             return [discord.app_commands.Choice(name=f"🎵 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
         pass
     
-    # Opción de respaldo instantánea por si falla la búsqueda o tarda de más
     return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
+    
 
 # --- COMANDO STOP ---
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
