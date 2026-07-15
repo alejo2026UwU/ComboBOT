@@ -2,3 +2,4 @@ discord.py
 Flask
 requests
 wavelink
+PyNaCl==1.5.0
