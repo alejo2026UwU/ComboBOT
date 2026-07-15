@@ -234,7 +234,6 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
-        nodos_config = [
         # Nodo público alternativo con buen soporte
         {"uri": "ssl://lavalink.liara.run:443", "password": "youshallnotpass"},
         # Nodo de respaldo
