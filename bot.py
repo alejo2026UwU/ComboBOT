@@ -28,10 +28,7 @@ REDIRECT_URI = "https://combobot2026.onrender.com/callback"
 # CONFIGURACIÓN DE LOS JUEGOS
 JUEGOS_DETALLES = {
     1: {"name": "Duelo de Espadas", "hit": "te encajó una estocada letal", "crit": "¡te decapitó con un crítico medieval!"},
-    # ... (Se mantienen todos los 100 juegos iguales que antes)
 }
-
-# (Se mantienen todas las rutas de Flask idénticas: @app.route('/'), /callback, /server_panel.html)
 
 # ==============================================================================
 # 3. CLASES DE VISTA INTERACTIVE (SISTEMA DE BOTONES 1V1)
@@ -92,6 +89,7 @@ class JuegoMasivoView(discord.ui.View):
 async def conectar_node():
     """Conecta a tu propio servidor de Lavalink configurado 🛡️🎵"""
     try:
+        # ⚠️ IMPORTANTE: Reemplazá 'https://mi-lavalink.onrender.com' por tu URL real de Render
         node = wavelink.Node(uri="https://mi-lavalink.onrender.com", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=bot)
         print("🎵 [Lavalink] ¡Conectado exitosamente al nodo nativo! 🎸", flush=True)
@@ -102,7 +100,6 @@ async def conectar_node():
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
     try:
-        # Esto limpia lo viejo y fuerza el comando /play nuevo ⚡
         sincronizados = await bot.tree.sync()
         print(f"🔄 Sincronizados {len(sincronizados)} comandos de barra.", flush=True)
     except Exception as e:
@@ -115,14 +112,8 @@ async def on_ready():
     )
     await bot.change_presence(activity=activity)
     
-    # Conectamos música en segundo plano de forma segura
+    # Conectamos música en segundo plano
     await conectar_node()
-    
-    try:
-        synced = await bot.tree.sync()
-        print(f"🌌 Sincronización exitosa: {len(synced)} comandos globales listos.", flush=True)
-    except Exception as e:
-        print(f"❌ Error al sincronizar comandos: {e}", flush=True)
 
 @bot.event
 async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
@@ -208,7 +199,6 @@ class ReproductorView(discord.ui.View):
 
     @discord.ui.button(emoji="♾️", style=discord.ButtonStyle.secondary, row=2)
     async def loop_btn(self, inter: discord.Interaction, button: discord.ui.Button):
-        # Activamos/desactivamos bucle simple
         loop_state = getattr(self.player, 'loop_track', False)
         self.player.loop_track = not loop_state
         estado = "ACTIVADO" if not loop_state else "DESACTIVADO"
@@ -217,7 +207,6 @@ class ReproductorView(discord.ui.View):
     # Fila 4: Bucle / Apagar / Shuffle
     @discord.ui.button(emoji="🔁", style=discord.ButtonStyle.secondary, row=3)
     async def loop_queue_btn(self, inter: discord.Interaction, button: discord.ui.Button):
-        # Activamos/desactivamos bucle de la cola
         loop_q = getattr(self.player, 'loop_queue', False)
         self.player.loop_queue = not loop_q
         estado = "ACTIVADA" if not loop_q else "DESACTIVADA"
@@ -234,7 +223,6 @@ class ReproductorView(discord.ui.View):
     @discord.ui.button(emoji="🔀", style=discord.ButtonStyle.secondary, row=3)
     async def shuffle_btn(self, inter: discord.Interaction, button: discord.ui.Button):
         if len(self.player.queue) > 1:
-            # Mezclamos la cola de reproducción
             lista_temp = list(self.player.queue)
             random.shuffle(lista_temp)
             self.player.queue.clear()
@@ -243,6 +231,72 @@ class ReproductorView(discord.ui.View):
             await inter.response.send_message("🔀 ¡Lista de reproducción mezclada!", ephemeral=True)
         else:
             await inter.response.send_message("❌ No hay suficientes canciones para mezclar.", ephemeral=True)
+
+
+# ==============================================================================
+# 🎮 MOTOR DE REPRODUCCIÓN (ESTILO VISUAL UZOX CON BORDE AZUL)
+# ==============================================================================
+async def reproducir_tema(interaction: discord.Interaction, busqueda: str, source):
+    """Función interna para buscar de inmediato, conectar y reproducir con estilo Uzox en azul 🛠️🎶"""
+    if not interaction.user.voice:
+        return await interaction.followup.send("❌ ¡Tenés que estar en un canal de voz! 🎤")
+    
+    player: wavelink.Player = interaction.guild.voice_client
+
+    if not player:
+        try:
+            player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+        except Exception as e:
+            return await interaction.followup.send(f"❌ Error al conectar al canal: {e}")
+
+    query = busqueda
+    if not (busqueda.startswith("http://") or busqueda.startswith("https://")):
+        if source == wavelink.TrackSource.YouTube:
+            query = f"ytsearch:{busqueda}"
+        elif source == wavelink.TrackSource.Spotify:
+            query = f"spsearch:{busqueda}"
+        elif source == wavelink.TrackSource.SoundCloud:
+            query = f"scsearch:{busqueda}"
+
+    try:
+        tracks = await wavelink.Playable.search(query)
+    except Exception:
+        try:
+            tracks = await wavelink.Playable.search(busqueda, source=source)
+        except Exception:
+            return await interaction.followup.send("⚠️ No se pudo procesar la búsqueda. ¡Probá con el enlace directo! 🔗")
+
+    if not tracks:
+        return await interaction.followup.send("❌ No encontré ninguna canción. 😢")
+
+    track = tracks[0]
+    await player.queue.put(track)
+    
+    segundos = int(track.length / 1000)
+    minutos, segundos = divmod(segundos, 60)
+    duracion_formateada = f"{minutos:02d}:{segundos:02d}"
+
+    # Embed con borde AZUL brillante 🎨🔵
+    embed = discord.Embed(title="🎶 Now Playing", color=discord.Color.from_rgb(0, 240, 255))
+    embed.add_field(name="**Track:**", value=f"`{track.title}`", inline=False)
+    embed.add_field(name="**Requested By:**", value=interaction.user.mention, inline=False)
+    embed.add_field(name="**Duration:**", value=f"`{duracion_formateada}`", inline=False)
+    
+    if track.artwork:
+        embed.set_thumbnail(url=track.artwork)
+
+    embed.set_footer(text="~ /equalizer for custom track control ~")
+
+    if not player.playing:
+        await player.play(player.queue.get())
+        await interaction.followup.send(embed=embed, view=ReproductorView(player))
+    else:
+        embed_queue = discord.Embed(
+            title="📝 Añadida a la lista",
+            description=f"**{track.title}** en cola.",
+            color=discord.Color.from_rgb(0, 240, 255)
+        )
+        await interaction.followup.send(embed=embed_queue)
 
 
 # ==============================================================================
@@ -278,7 +332,6 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
         if not node:
             return []
         
-        # Buscamos directamente desde Lavalink con un timeout seguro ⚡
         tracks = await asyncio.wait_for(
             node.search(current, source=wavelink.TrackSource.YouTube),
             timeout=1.2
@@ -288,7 +341,6 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
     except Exception:
         pass
     
-    # Opción de respaldo si Lavalink tarda en responder
     return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
 
 
@@ -328,13 +380,10 @@ async def help_slash(interaction: discord.Interaction):
     )
     
     embed.add_field(
-        name="🎵 Música Separada por Plataformas", 
+        name="🎵 Música", 
         value=(
-            "• `/play_yt [canción]` - Busca y reproduce en YouTube 🔴\n"
-            "• `/play_spotify [canción]` - Busca y reproduce en Spotify 🟢\n"
-            "• `/play_soundcloud [canción]` - Busca y reproduce en SoundCloud 🟠\n"
-            "• `/skip` - Detiene la música y saca al bot del canal ⏭️\n"
-            "• `/stop` - Detiene la música por completo ⏹️"
+            "• `/play [canción]` - Busca y reproduce música 🔴🟢🟠\n"
+            "• `/stop` - Detiene la música por completo ⏹"
         ), 
         inline=False
     )
@@ -366,7 +415,7 @@ async def help_cyber_slash(interaction: discord.Interaction):
     )
     
     embed.add_field(name="🎮 Juegos Multijugador", value="`/juego [1-100] [@rival]`, `/mine`, `/cyber_roulette` 🥊", inline=False)
-    embed.add_field(name="🎵 Sistema de Música", value="`/play_yt`, `/play_spotify`, `/play_soundcloud`, `/skip`, `/stop` 🎶", inline=False)
+    embed.add_field(name="🎵 Sistema de Música", value="`/play`, `/stop` 🎶", inline=False)
     embed.set_footer(text="ComboBOT 2026 | Desarrollado con ❤️")
     
     await interaction.response.send_message(embed=embed)
