@@ -426,16 +426,31 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
         elif source == wavelink.TrackSource.SoundCloud:
             query = f"scsearch:{busqueda}"
 
+    # 🔄 SISTEMA DE BÚSQUEDA CON MULTI-PLAN DE RESPALDO ANTI-BLOQUEOS 🛡️
+    tracks = None
     try:
+        # Plan A: Intenta la búsqueda configurada originalmente (o enlace directo)
+        print(f"🔍 Intentando búsqueda principal: {query}", flush=True)
         tracks = await wavelink.Playable.search(query)
     except Exception as e:
-        print(f"❌ Error búsqueda 1: {e}", flush=True)
-    try:
-        # ¡Ojo acá! Tiene que tener 4 espacios más de sangría que el 'try' 
-        tracks = await wavelink.Playable.search(query, source=wavelink.TrackSource.YouTubeMusic)
-    except Exception as e:
-        print(f"❌ Error búsqueda: {e}", flush=True)
-        return await interaction.followup.send("⚠️ No se pudo procesar la búsqueda. ¡Probá con el enlace directo! 🔗")
+        print(f"⚠️ Falló Plan A ({e}). Intentando alternativa en Spotify...", flush=True)
+        try:
+            # Plan B: Si falla (por bloqueo de IP), forzamos Spotify
+            query_spotify = f"spsearch:{busqueda}"
+            tracks = await wavelink.Playable.search(query_spotify)
+        except Exception as e2:
+            print(f"⚠️ Falló Plan B ({e2}). Intentando alternativa en SoundCloud...", flush=True)
+            try:
+                # Plan C: Si todo lo demás muere, SoundCloud salva las papas
+                query_sc = f"scsearch:{busqueda}"
+                tracks = await wavelink.Playable.search(query_sc)
+            except Exception as e3:
+                print(f"❌ Error total en todas las plataformas: {e3}", flush=True)
+                return await interaction.followup.send("⚠️ No se pudo procesar la búsqueda en ninguna plataforma. ¡Probá con el enlace directo! 🔗")
+
+    if not tracks:
+        return await interaction.followup.send("⚠️ No se encontraron resultados para tu búsqueda.")
+
     track = tracks[0]
     player.queue.put(track)
     
