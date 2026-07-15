@@ -246,32 +246,7 @@ class ReproductorView(discord.ui.View):
 
 
 # ==============================================================================
-# 🎮 MOTOR DE BÚSQUEDA ULTRA RÁPIDO CON CONTROL DE TIEMPO
-# ==============================================================================
-async def buscar_titulos_rapido(query: str) -> list:
-    """Busca sugerencias en YouTube de forma ultra veloz con timeout estricto ⚡"""
-    try:
-        encoded_query = urllib.parse.quote(query)
-        url = f"https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q={encoded_query}"
-        
-        loop = asyncio.get_event_loop()
-        # Timeout de 0.8 segundos para la conexión web
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        
-        def fetch():
-            with urllib.request.urlopen(req, timeout=0.8) as response:
-                return response.read().decode('utf-8')
-                
-        res_text = await loop.run_in_executor(None, fetch)
-        
-        json_data = json.loads(re.match(r"window\.google\.ac\.hr\((.*)\)", res_text).group(1)) if "window.google.ac.hr" in res_text else json.loads(res_text)
-        return [item[0] for item in json_data[1]][:5]
-    except Exception:
-        return []
-
-
-# ==============================================================================
-# 🎮 COMANDO /PLAY ÚNICO CON AUTOCOMPLETADO BLINDADO 🛡️
+# 🎮 COMANDO /PLAY ÚNICO CON AUTOCOMPLETADO NATIVO DE WAVELINK 🛡️
 # ==============================================================================
 @bot.tree.command(name="play", description="Busca y reproduce música de YouTube, Spotify o SoundCloud 🎵")
 @discord.app_commands.describe(
@@ -298,17 +273,22 @@ async def play(interaction: discord.Interaction, busqueda: str, plataforma: str 
 async def play_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
-        
     try:
-        # Forzamos un tiempo límite total de 1 segundo para evitar el "pensando..."
-        sugerencias = await asyncio.wait_for(buscar_titulos_rapido(current), timeout=1.0)
+        node = wavelink.Pool.get_node()
+        if not node:
+            return []
         
-        if sugerencias:
-            return [discord.app_commands.Choice(name=f"🎵 {sug[:80]}", value=sug) for sug in sugerencias]
+        # Buscamos directamente desde Lavalink con un timeout seguro ⚡
+        tracks = await asyncio.wait_for(
+            node.search(current, source=wavelink.TrackSource.YouTube),
+            timeout=1.2
+        )
+        if tracks:
+            return [discord.app_commands.Choice(name=f"🎵 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
     except Exception:
         pass
-        
-    # Si falla o tarda mucho, te muestra esto al instante para que puedas dar Enter sin trabarse
+    
+    # Opción de respaldo si Lavalink tarda en responder
     return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
 
 
