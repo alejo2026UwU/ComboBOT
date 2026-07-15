@@ -7,6 +7,9 @@ import requests
 import discord
 from discord.ext import commands
 import urllib.parse
+import urllib.request
+import json
+import re
 import wavelink
 
 # ==============================================================================
@@ -120,6 +123,31 @@ async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
     print(f"✅ Nodo de Wavelink listo: {payload.node.identifier}", flush=True)
 
 # ==============================================================================
+# 🎮 MOTOR DE BÚSQUEDA RÁPIDA (AUXILIAR)
+# ==============================================================================
+async def buscar_titulos_rapido(query: str) -> list:
+    """Busca videos en YouTube usando la API de sugerencias públicas (sin depender de Lavalink) 🚀"""
+    try:
+        encoded_query = urllib.parse.quote(query)
+        url = f"https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q={encoded_query}"
+        
+        loop = asyncio.get_event_loop()
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        
+        def fetch():
+            with urllib.request.urlopen(req, timeout=1.5) as response:
+                return response.read().decode('utf-8')
+                
+        res_text = await loop.run_in_executor(None, fetch)
+        
+        json_data = json.loads(re.match(r"window\.google\.ac\.hr\((.*)\)", res_text).group(1)) if "window.google.ac.hr" in res_text else json.loads(res_text)
+        sugerencias = [item[0] for item in json_data[1]]
+        return sugerencias[:5]
+    except Exception:
+        return [query]
+
+
+# ==============================================================================
 # 🎮 COMANDOS DE MÚSICA SEPARADOS POR PLATAFORMA (¡CON AUTOCOMPLETADO!)
 # ==============================================================================
 async def reproducir_tema(interaction: discord.Interaction, busqueda: str, source):
@@ -165,6 +193,7 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
     else:
         await interaction.followup.send(f"➕ Añadida a la lista: **{track.title}** 📝")
 
+
 # --- 🔴 YOUTUBE PLAY & AUTOCOMPLETE ---
 @bot.tree.command(name="play_yt", description="Busca y reproduce música de YouTube 🔴")
 async def play_yt(interaction: discord.Interaction, busqueda: str):
@@ -176,15 +205,8 @@ async def yt_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
-        node = wavelink.Pool.get_node()
-        if not node:
-            return []
-        tracks = await asyncio.wait_for(
-            node.search(current, source=wavelink.TrackSource.YouTube),
-            timeout=1.2
-        )
-        if tracks:
-            return [discord.app_commands.Choice(name=f"🎥 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+        sugerencias = await buscar_titulos_rapido(current)
+        return [discord.app_commands.Choice(name=f"🎥 {sug[:80]}", value=sug) for sug in sugerencias]
     except Exception:
         pass
     return []
@@ -201,15 +223,8 @@ async def spotify_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
     try:
-        node = wavelink.Pool.get_node()
-        if not node:
-            return []
-        tracks = await asyncio.wait_for(
-            node.search(current, source=wavelink.TrackSource.Spotify),
-            timeout=1.2
-        )
-        if tracks:
-            return [discord.app_commands.Choice(name=f"🟢 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+        sugerencias = await buscar_titulos_rapido(current)
+        return [discord.app_commands.Choice(name=f"🟢 {sug[:80]}", value=sug) for sug in sugerencias]
     except Exception:
         pass
     return []
@@ -226,15 +241,8 @@ async def soundcloud_autocomplete(interaction: discord.Interaction, current: str
     if not current or len(current) < 2:
         return []
     try:
-        node = wavelink.Pool.get_node()
-        if not node:
-            return []
-        tracks = await asyncio.wait_for(
-            node.search(current, source=wavelink.TrackSource.SoundCloud),
-            timeout=1.2
-        )
-        if tracks:
-            return [discord.app_commands.Choice(name=f"🟠 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
+        sugerencias = await buscar_titulos_rapido(current)
+        return [discord.app_commands.Choice(name=f"🟠 {sug[:80]}", value=sug) for sug in sugerencias]
     except Exception:
         pass
     return []
