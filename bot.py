@@ -101,6 +101,12 @@ async def conectar_node():
 @bot.event
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
+    try:
+        # Esto limpia lo viejo y fuerza el comando /play nuevo ⚡
+        sincronizados = await bot.tree.sync()
+        print(f"🔄 Sincronizados {len(sincronizados)} comandos de barra.", flush=True)
+    except Exception as e:
+        print(f"❌ Error al sincronizar: {e}", flush=True)
     
     # RPC Activo 🚀
     activity = discord.Activity(
