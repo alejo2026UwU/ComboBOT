@@ -246,76 +246,32 @@ class ReproductorView(discord.ui.View):
 
 
 # ==============================================================================
-# 🎮 MOTOR DE REPRODUCCIÓN (ESTILO VISUAL UZOX CON BORDE AZUL)
+# 🎮 MOTOR DE BÚSQUEDA ULTRA RÁPIDO CON CONTROL DE TIEMPO
 # ==============================================================================
-async def reproducir_tema(interaction: discord.Interaction, busqueda: str, source):
-    """Función interna para buscar de inmediato, conectar y reproducir con estilo Uzox en azul 🛠️🎶"""
-    if not interaction.user.voice:
-        return await interaction.followup.send("❌ ¡Tenés que estar en un canal de voz! 🎤")
-    
-    player: wavelink.Player = interaction.guild.voice_client
-
-    if not player:
-        try:
-            player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
-        except Exception as e:
-            return await interaction.followup.send(f"❌ Error al conectar al canal: {e}")
-
-    # Forzar el prefijo correcto según la plataforma elegida
-    query = busqueda
-    if not (busqueda.startswith("http://") or busqueda.startswith("https://")):
-        if source == wavelink.TrackSource.YouTube:
-            query = f"ytsearch:{busqueda}"
-        elif source == wavelink.TrackSource.Spotify:
-            query = f"spsearch:{busqueda}"
-        elif source == wavelink.TrackSource.SoundCloud:
-            query = f"scsearch:{busqueda}"
-
+async def buscar_titulos_rapido(query: str) -> list:
+    """Busca sugerencias en YouTube de forma ultra veloz con timeout estricto ⚡"""
     try:
-        tracks = await wavelink.Playable.search(query)
+        encoded_query = urllib.parse.quote(query)
+        url = f"https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q={encoded_query}"
+        
+        loop = asyncio.get_event_loop()
+        # Timeout de 0.8 segundos para la conexión web
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        
+        def fetch():
+            with urllib.request.urlopen(req, timeout=0.8) as response:
+                return response.read().decode('utf-8')
+                
+        res_text = await loop.run_in_executor(None, fetch)
+        
+        json_data = json.loads(re.match(r"window\.google\.ac\.hr\((.*)\)", res_text).group(1)) if "window.google.ac.hr" in res_text else json.loads(res_text)
+        return [item[0] for item in json_data[1]][:5]
     except Exception:
-        try:
-            tracks = await wavelink.Playable.search(busqueda, source=source)
-        except Exception:
-            return await interaction.followup.send("⚠️ No se pudo procesar la búsqueda. ¡Probá con el enlace directo! 🔗")
-
-    if not tracks:
-        return await interaction.followup.send("❌ No encontré ninguna canción. 😢")
-
-    track = tracks[0]
-    await player.queue.put(track)
-    
-    # Formatear la duración exacta
-    segundos = int(track.length / 1000)
-    minutos, segundos = divmod(segundos, 60)
-    duracion_formateada = f"{minutos:02d}:{segundos:02d}"
-
-    # Embed diseñado igual al de tu captura pero con borde AZUL brillante 🎨🔵
-    embed = discord.Embed(title="🎶 Now Playing", color=discord.Color.from_rgb(0, 240, 255))
-    embed.add_field(name="**Track:**", value=f"`{track.title}`", inline=False)
-    embed.add_field(name="**Requested By:**", value=interaction.user.mention, inline=False)
-    embed.add_field(name="**Duration:**", value=f"`{duracion_formateada}`", inline=False)
-    
-    # Imagen de portada si existe
-    if track.artwork:
-        embed.set_thumbnail(url=track.artwork)
-
-    embed.set_footer(text="~ /equalizer for custom track control ~")
-
-    if not player.playing:
-        await player.play(player.queue.get())
-        await interaction.followup.send(embed=embed, view=ReproductorView(player))
-    else:
-        embed_queue = discord.Embed(
-            title="📝 Añadida a la lista",
-            description=f"**{track.title}** en cola.",
-            color=discord.Color.from_rgb(0, 240, 255)
-        )
-        await interaction.followup.send(embed=embed_queue)
+        return []
 
 
 # ==============================================================================
-# 🎮 COMANDO /PLAY ÚNICO CON AUTOCOMPLETADO Y SELECCIÓN DE PLATAFORMA
+# 🎮 COMANDO /PLAY ÚNICO CON AUTOCOMPLETADO BLINDADO 🛡️
 # ==============================================================================
 @bot.tree.command(name="play", description="Busca y reproduce música de YouTube, Spotify o SoundCloud 🎵")
 @discord.app_commands.describe(
@@ -330,7 +286,6 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
 async def play(interaction: discord.Interaction, busqueda: str, plataforma: str = "youtube"):
     await interaction.response.defer()
     
-    # Mapeamos la elección a las fuentes de Wavelink
     source = wavelink.TrackSource.YouTube
     if plataforma == "spotify":
         source = wavelink.TrackSource.Spotify
@@ -343,13 +298,19 @@ async def play(interaction: discord.Interaction, busqueda: str, plataforma: str 
 async def play_autocomplete(interaction: discord.Interaction, current: str):
     if not current or len(current) < 2:
         return []
+        
     try:
-        # Usa nuestra función rápida externa para que no se quede recalculando
-        sugerencias = await buscar_titulos_rapido(current)
-        return [discord.app_commands.Choice(name=f"🎵 {sug[:80]}", value=sug) for sug in sugerencias]
+        # Forzamos un tiempo límite total de 1 segundo para evitar el "pensando..."
+        sugerencias = await asyncio.wait_for(buscar_titulos_rapido(current), timeout=1.0)
+        
+        if sugerencias:
+            return [discord.app_commands.Choice(name=f"🎵 {sug[:80]}", value=sug) for sug in sugerencias]
     except Exception:
         pass
-    return []
+        
+    # Si falla o tarda mucho, te muestra esto al instante para que puedas dar Enter sin trabarse
+    return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
+
 
 # --- COMANDO STOP ---
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
