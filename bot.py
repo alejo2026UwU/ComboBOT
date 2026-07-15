@@ -86,37 +86,41 @@ class JuegoMasivoView(discord.ui.View):
 # ==============================================================================
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 async def conectar_node():
-    """Conecta a un servidor de Lavalink público y ultra estable 🛡️🎵"""
-    try:
-        # Usamos un nodo público con soporte SSL que siempre está activo 🟢
-        node = wavelink.Node(
-            uri="ssl://lavalink.liara.run:443", 
-            password="youshallnotpass",
-            inactive_player_timeout=300
-        )
-        await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Lavalink] ¡Conectado exitosamente al nodo público! 🎸", flush=True)
-    except Exception as e:
-        print(f"⚠️ [Lavalink Alert] Error al intentar conectar: {e}", flush=True)
-    
-@bot.event
-async def on_ready():
-    print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
-    try:
-        sincronizados = await bot.tree.sync()
-        print(f"🔄 Sincronizados {len(sincronizados)} comandos de barra.", flush=True)
-    except Exception as e:
-        print(f"❌ Error al sincronizar: {e}", flush=True)
-    
-    # RPC Activo 🚀
-    activity = discord.Activity(
-        type=discord.ActivityType.watching, 
-        name="¡ComboBOT Premium! 🚀 | /help 🛸"
-    )
-    await bot.change_presence(activity=activity)
-    
-    # Conectamos música en segundo plano
-    await conectar_node()
+    """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
+    nodos_config = [
+        # 1. Tu Lavalink en Render (Asegúrate de que use wss:// y no https://)
+        {"uri": "wss://mi-lavalink.onrender.com", "password": "youshallnotpass"},
+        # 2. Nodo público ultra estable compatible con Lavalink v4 (Wavelink 3)
+        {"uri": "ssl://lava-v4.ajie.gq:443", "password": "youshallnotpass"},
+        # 3. Otro nodo de respaldo compatible
+        {"uri": "ssl://lavalink.lavaclient.repl.co:443", "password": "youshallnotpass"}
+    ]
+
+    for config in nodos_config:
+        try:
+            print(f"🔄 Intentando conectar al nodo: {config['uri']}...", flush=True)
+            
+            # Configuramos el nodo. Wavelink v3 requiere la URI limpia.
+            node = wavelink.Node(
+                uri=config["uri"], 
+                password=config["password"],
+                inactive_player_timeout=300
+            )
+            
+            await wavelink.Pool.connect(nodes=[node], client=bot)
+            print(f"🎵 [Lavalink] ¡Conectado exitosamente a {config['uri']}! 🎸", flush=True)
+            return
+        except Exception as e:
+            print(f"⚠️ No se pudo conectar a {config['uri']}: {e}", flush=True)
+            try:
+                wavelink.Pool.close()
+            except:
+                pass
+            await asyncio.sleep(2)
+
+    print("❌ Todos los nodos fallaron. Reintentando ciclo en 15 segundos...", flush=True)
+    await asyncio.sleep(15)
+    bot.loop.create_task(conectar_node())
 
 @bot.event
 async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
