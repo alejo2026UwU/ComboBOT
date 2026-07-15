@@ -270,7 +270,7 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
         return await interaction.followup.send("❌ No encontré ninguna canción. 😢")
 
     track = tracks[0]
-    await player.queue.put(track)
+    player.queue.put(track)
     
     segundos = int(track.length / 1000)
     minutos, segundos = divmod(segundos, 60)
