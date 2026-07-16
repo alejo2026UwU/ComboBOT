@@ -234,10 +234,10 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
-        # Nodo ultra-confiable de Lavasrc (Súper estable hoy en día) 🟢
-        {"uri": "ssl://lavalink.yandere.today:443", "password": "youshallnotpass"},
-        # Nodo secundario alternativo en puerto estándar 🪐
-        {"uri": "http://lava.link:8080", "password": "youshallnotpass"}
+        # Nodo activo reportado hoy 🟢
+        {"uri": "ssl://lavalink.derpystuff.net:443", "password": "youshallnotpass"},
+        # Nodo secundario alternativo 🪐
+        {"uri": "ssl://lavalink-v4.m9dev.ru:443", "password": "youshallnotpass"}
     ]
     
     for config in nodos_config:
