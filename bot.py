@@ -238,10 +238,11 @@ async def conectar_node():
     try:
         print("🔄 Intentando conectar al nodo: http://lava.link:80...", flush=True)
         
-        # 🌟 Creamos un solo nodo apuntando directo al HTTP público
+        # 🌟 Metemos 'use_http=True' para obligarlo a apagar el SSL bugueado
         node = wavelink.Node(
             uri="http://lava.link:80", 
-            password="youshallnotpass"
+            password="youshallnotpass",
+            use_http=True
         )
         
         await wavelink.Pool.connect(nodes=[node], client=bot)
