@@ -11,6 +11,7 @@ import urllib.request
 import json
 import re
 import wavelink
+import asyncio
 
 # ==============================================================================
 # 1. CONFIGURACIÓN COMPLETA DE FLASK & CYBER DISCORD BOT
@@ -486,48 +487,45 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
 # ==============================================================================
 @bot.tree.command(name="play", description="Reproduce una canción")
 async def play(interaction: discord.Interaction, buscar: str):
-    # Tu código para reproducir la música aquí...
-    pass
+    # 🌟 Avisamos a Discord que se aguante porque estamos procesando la música
+    await interaction.response.defer(thinking=True)
+    
+    try:
+        # Aquí va tu lógica para conectar al canal de voz y reproducir la pista
+        # Nota: Como usamos defer(), para responder al usuario al final del comando
+        # debés usar: await interaction.followup.send(f"🎶 Reproduciendo: {buscar}")
+        pass
+    except Exception as e:
+        await interaction.followup.send(f"❌ Ocurrió un error: {e}")
 
 @play.autocomplete("buscar")
 async def play_autocomplete(interaction: discord.Interaction, current: str):
     if not current:
         return []
     
-    # Si el nodo no está conectado, devolvemos una lista vacía rápido para que no tire error
+    # ⏱️ Buscamos el nodo activo de Wavelink 3
     node = wavelink.Pool.get_node()
-    if not node or not node.status == wavelink.NodeStatus.CONNECTED:
+    if not node or node.status != wavelink.NodeStatus.CONNECTED:
         return [discord.app_commands.Choice(name="⚠️ Servidor de música desconectado", value="error")]
 
     try:
-        # Buscamos en YouTube super rápido usando el nodo de Lavalink
-        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube)
-        if not tracks:
-            return []
+        # Buscamos en YouTube con un timeout estricto para ganarle a los 3 segundos de Discord
+        tracks = await asyncio.wait_for(
+            wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube),
+            timeout=1.5
+        )
         
-        # Le mostramos las primeras 5 opciones que encuentre al usuario
+        if not tracks:
+            return [discord.app_commands.Choice(name=f"🔍 Buscar directamente: {current[:80]}", value=current)]
+        
+        # Devolvemos las primeras 5 opciones reales encontradas
         return [
-            discord.app_commands.Choice(name=track.title[:100], value=track.uri)
+            discord.app_commands.Choice(name=f"🎵 {track.title[:80]}", value=track.uri)
             for track in tracks[:5]
         ]
     except Exception:
-        return []
-        
-    try:
-        node = wavelink.Pool.get_node()
-        if not node:
-            return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
-            
-        tracks = await asyncio.wait_for(
-            wavelink.Playable.search(f"ytsearch:{current}"),
-            timeout=1.2
-        )
-        if tracks:
-            return [discord.app_commands.Choice(name=f"🎵 {t.title[:80]}", value=t.uri) for t in tracks[:5]]
-    except Exception:
-        pass
-    
-    return [discord.app_commands.Choice(name=f"🔍 Buscar: {current}", value=current)]
+        # Si se agota el tiempo o falla la API, dejamos la opción de buscar el texto plano como fallback
+        return [discord.app_commands.Choice(name=f"🔍 Buscar: {current[:80]}", value=current)]
     
 
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
