@@ -235,7 +235,7 @@ async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
         {
-            "uri": "http://lavalink.lavalink.top:80", 
+            "uri": "http://lavalink.pantheric.org:80", 
             "password": "youshallnotpass"
         }
     ]
