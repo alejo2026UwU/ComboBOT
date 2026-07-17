@@ -267,8 +267,8 @@ async def conectar_node():
     bot.loop.create_task(conectar_node())
 
 @bot.event
-async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
-    print(f"El nodo {payload.node.id} está conectado y listo! 🚀")
+async def on_wavelink_node_ready(payload: wavelink.NodeReadyEventPayload):
+    print(f"Node {payload.node.identifier} is ready! 🚀")
 
 @bot.event
 async def on_ready():
