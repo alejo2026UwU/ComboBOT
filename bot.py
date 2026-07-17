@@ -235,7 +235,7 @@ async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
         {
-            "uri": "ssl://lavalink.yandere.cc:443", 
+            "uri": "ssl://lavalink.is-a.dev:443", 
             "password": "youshallnotpass"
         }
     ]
