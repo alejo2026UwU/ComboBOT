@@ -233,45 +233,30 @@ class HelpGamesView(discord.ui.View):
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
 async def conectar_node():
-    """Conecta a Lavalink probando varios nodos públicos estables v4 🛡️🎵"""
+    """Conecta a Lavalink con reintentos 🛡️🎵"""
     
-    nodos_a_probar = [
-        {"uri": "http://lava.link:80", "password": "youshallnotpass", "name": "Lava.link (HTTP)", "ssl": False},
-        {"uri": "http://lavalink.proxy.lol:80", "password": "youshallnotpass", "name": "Proxy.lol (HTTP)", "ssl": False},
-        {"uri": "ssl://lavalink.is-a.dev:443", "password": "youshallnotpass", "name": "Is-a-dev (SSL)", "ssl": True}
-    ]
-    
-    for config in nodos_a_probar:
+    try:
+        print("🔄 Intentando conectar al nodo: http://lava.link:80...", flush=True)
+        
+        # 🌟 Creamos un solo nodo apuntando directo al HTTP público
+        node = wavelink.Node(
+            uri="http://lava.link:80", 
+            password="youshallnotpass"
+        )
+        
+        await wavelink.Pool.connect(nodes=[node], client=bot)
+        print("🎵 [Lavalink] ¡Conectado exitosamente! 🎸", flush=True)
+        return
+        
+    except Exception as e:
+        print(f"⚠️ No se pudo conectar: {e}", flush=True)
         try:
-            print(f"🔄 Intentando conectar al nodo: {config['name']} ({config['uri']})...", flush=True)
-            
-            try:
-                await wavelink.Pool.close()
-            except:
-                pass
-            
-            # 🌟 Si no usa SSL, le pasamos use_http=True para que no intente usar ssl:default
-            if not config["ssl"]:
-                node = wavelink.Node(
-                    uri=config["uri"], 
-                    password=config["password"],
-                    use_http=True
-                )
-            else:
-                node = wavelink.Node(
-                    uri=config["uri"], 
-                    password=config["password"]
-                )
-            
-            await wavelink.Pool.connect(nodes=[node], client=bot)
-            print(f"🎵 [Lavalink] ¡Conectado exitosamente a {config['name']}! 🎸", flush=True)
-            return
-            
-        except Exception as e:
-            print(f"⚠️ Falló {config['name']}: {e}", flush=True)
-            await asyncio.sleep(1)
+            await wavelink.Pool.close()
+        except:
+            pass
+        await asyncio.sleep(2)
 
-    print("❌ Todos los nodos disponibles fallaron. Reintentando ciclo completo en 15 segundos...", flush=True)
+    print("❌ El nodo falló. Reintentando ciclo en 15 segundos...", flush=True)
     await asyncio.sleep(15)
     bot.loop.create_task(conectar_node())
     
