@@ -235,32 +235,28 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     
-    node = wavelink.Node(
-        uri="ssl://lavalink.swg.gg:443",
-        password="youshallnotpass",
-        inactive_timeout=300
-    )
+    uri = "ssl://lavalink.swg.gg:443"
+    password = "youshallnotpass"
     
-    await wavelink.Pool.connect(nodes=[node])
+    try:
+        print(f"🔄 Intentando conectar al nodo: {uri}...", flush=True)
+        
+        node = wavelink.Node(
+            uri=uri, 
+            password=password,
+            inactive_timeout=300
+        )
+        
+        await wavelink.Pool.connect(nodes=[node], client=bot)
+        print(f"🎵 [Lavalink] ¡Conectado exitosamente a {uri}! 🎸", flush=True)
+        return
+    except Exception as e:
+        print(f"⚠️ No se pudo conectar a {uri}: {e}", flush=True)
         try:
-            print(f"🔄 Intentando conectar al nodo: {config['uri']}...", flush=True)
-            
-            node = wavelink.Node(
-                uri=config["uri"], 
-                password=config["password"],
-                inactive_player_timeout=300
-            )
-            
-            await wavelink.Pool.connect(nodes=[node], client=bot)
-            print(f"🎵 [Lavalink] ¡Conectado exitosamente a {config['uri']}! 🎸", flush=True)
-            return
-        except Exception as e:
-            print(f"⚠️ No se pudo conectar a {config['uri']}: {e}", flush=True)
-            try:
-                wavelink.Pool.close()
-            except:
-                pass
-            await asyncio.sleep(2)
+            wavelink.Pool.close()
+        except:
+            pass
+        await asyncio.sleep(2)
 
     print("❌ Todos los nodos fallaron. Reintentando ciclo en 15 segundos...", flush=True)
     await asyncio.sleep(15)
