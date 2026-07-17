@@ -235,7 +235,7 @@ async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
         {
-            "uri": "http://lava.link:80", 
+            "uri": "ssl://lavalink.swg.gg:443", 
             "password": "youshallnotpass"
         }
     ]
@@ -267,8 +267,9 @@ async def conectar_node():
     bot.loop.create_task(conectar_node())
 
 @bot.event
-async def on_wavelink_node_ready(node: wavelink.Node):
-    print(f"El nodo {node.id} está conectado y listo! 🚀")
+async def on_wavelink_node_ready(payload: wavelink.NodeReadyEvent):
+    print(f"El nodo {payload.node.id} está conectado y listo! 🚀")
+
 @bot.event
 async def on_ready():
     print(f"📡 Enlace cuántico establecido. {bot.user.name} online! 🌌", flush=True)
