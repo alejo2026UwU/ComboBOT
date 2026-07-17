@@ -235,7 +235,7 @@ async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
         {
-            "uri": "ssl://lavalink.is-a.dev:443", 
+            "uri": "ssl://lavalink.swg.gg:443", 
             "password": "youshallnotpass"
         }
     ]
@@ -484,31 +484,35 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
 # ==============================================================================
 # 🎮 COMANDOS DE BARRA (MÚSICA, JUEGOS Y SOPORTE)
 # ==============================================================================
-@bot.tree.command(name="play", description="Busca y reproduce música de YouTube, Spotify o SoundCloud 🎵")
-@discord.app_commands.describe(
-    busqueda="Nombre de la canción o enlace directo 🔗",
-    plataforma="Elegí dónde buscar (opcional, por defecto YouTube) 💿"
-)
-@discord.app_commands.choices(plataforma=[
-    discord.app_commands.Choice(name="🔴 YouTube", value="youtube"),
-    discord.app_commands.Choice(name="🟢 Spotify", value="spotify"),
-    discord.app_commands.Choice(name="🟠 SoundCloud", value="soundcloud")
-])
-async def play(interaction: discord.Interaction, busqueda: str, plataforma: str = "youtube"):
-    await interaction.response.defer()
-    
-    source = wavelink.TrackSource.YouTube
-    if plataforma == "spotify":
-        source = wavelink.TrackSource.Spotify
-    elif plataforma == "soundcloud":
-        source = wavelink.TrackSource.SoundCloud
-        
-    await reproducir_tema(interaction, busqueda, source)
+@bot.tree.command(name="play", description="Reproduce una canción")
+async def play(interaction: discord.Interaction, buscar: str):
+    # Tu código para reproducir la música aquí...
+    pass
 
-@play.autocomplete("busqueda")
+@play.autocomplete("buscar")
 async def play_autocomplete(interaction: discord.Interaction, current: str):
-    if not current or len(current) < 2:
+    if not current:
         return []
+    
+    # Si el nodo no está conectado, devolvemos una lista vacía rápido para que no tire error
+    node = wavelink.Pool.get_node()
+    if not node or not node.status == wavelink.NodeStatus.CONNECTED:
+        return [discord.app_commands.Choice(name="⚠️ Servidor de música desconectado", value="error")]
+
+    try:
+        # Buscamos en YouTube super rápido usando el nodo de Lavalink
+        tracks = await wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube)
+        if not tracks:
+            return []
+        
+        # Le mostramos las primeras 5 opciones que encuentre al usuario
+        return [
+            discord.app_commands.Choice(name=track.title[:100], value=track.uri)
+            for track in tracks[:5]
+        ]
+    except Exception:
+        return []
+        
     try:
         node = wavelink.Pool.get_node()
         if not node:
