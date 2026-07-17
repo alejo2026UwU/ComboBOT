@@ -502,11 +502,16 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
     if not current:
         return []
     
-    # ⏱️ Buscamos el nodo activo de Wavelink 3
-    node = wavelink.Pool.get_node()
-    if not node or node.status != wavelink.NodeStatus.CONNECTED:
-        return [discord.app_commands.Choice(name="⚠️ Servidor de música desconectado", value="error")]
+    # 🌟 Usamos un try-except acá arriba para capturar si no hay nodos conectados 
+    # sin que explote la consola de Render
+    try:
+        node = wavelink.Pool.get_node()
+        if node.status != wavelink.NodeStatus.CONNECTED:
+            return [discord.app_commands.Choice(name="⚠️ Servidor de música desconectado", value="error")]
+    except Exception:
+        return [discord.app_commands.Choice(name="⚠️ Conectando al servidor de música...", value="error")]
 
+    # ... el resto de tu código de búsqueda sigue acá abajo igual ...
     try:
         # Buscamos en YouTube con un timeout estricto para ganarle a los 3 segundos de Discord
         tracks = await asyncio.wait_for(
