@@ -235,8 +235,8 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     
-    # 🌟 Cambiamos a este nodo público que tiene mejor soporte para la v3
-    uri = "ssl://lavalink.is-a.dev:443"
+    # 🌟 Cambiamos a un nodo HTTP sin SSL para romper el bucle del WebSocket
+    uri = "http://lava.link:80"
     password = "youshallnotpass"
     
     try:
