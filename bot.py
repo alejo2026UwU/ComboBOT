@@ -241,10 +241,10 @@ async def conectar_node():
     try:
         print(f"🔄 Intentando conectar al nodo: {uri}...", flush=True)
         
+        # 🌟 Quitamos el parámetro del timeout para que use el de defecto y no falle jamás
         node = wavelink.Node(
             uri=uri, 
-            password=password,
-            inactive_timeout=300
+            password=password
         )
         
         await wavelink.Pool.connect(nodes=[node], client=bot)
@@ -253,7 +253,8 @@ async def conectar_node():
     except Exception as e:
         print(f"⚠️ No se pudo conectar a {uri}: {e}", flush=True)
         try:
-            wavelink.Pool.close()
+            # 🌟 Agregamos el 'await' que faltaba para solucionar el Warning de Render
+            await wavelink.Pool.close()
         except:
             pass
         await asyncio.sleep(2)
@@ -261,7 +262,7 @@ async def conectar_node():
     print("❌ Todos los nodos fallaron. Reintentando ciclo en 15 segundos...", flush=True)
     await asyncio.sleep(15)
     bot.loop.create_task(conectar_node())
-
+    
 @bot.event
 async def on_wavelink_node_ready(payload: wavelink.NodeReadyEventPayload):
     print(f"Node {payload.node.identifier} is ready! 🚀")
