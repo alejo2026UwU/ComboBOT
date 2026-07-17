@@ -505,34 +505,26 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
     if not current:
         return []
     
-    # 🌟 Usamos un try-except acá arriba para capturar si no hay nodos conectados 
-    # sin que explote la consola de Render
     try:
         node = wavelink.Pool.get_node()
-        if node.status != wavelink.NodeStatus.CONNECTED:
-            return [discord.app_commands.Choice(name="⚠️ Servidor de música desconectado", value="error")]
+        if node.status == wavelink.NodeStatus.CONNECTED:
+            # Si el nodo está online, buscamos las canciones de forma dinámica
+            tracks = await asyncio.wait_for(
+                wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube),
+                timeout=1.5
+            )
+            if tracks:
+                return [
+                    discord.app_commands.Choice(name=f"🎵 {track.title[:80]}", value=track.uri)
+                    for track in tracks[:5]
+                ]
     except Exception:
-        return [discord.app_commands.Choice(name="⚠️ Conectando al servidor de música...", value="error")]
+        # Si no hay nodo o da timeout, pasamos de largo sin trabar la interfaz
+        pass
 
-    # ... el resto de tu código de búsqueda sigue acá abajo igual ...
-    try:
-        # Buscamos en YouTube con un timeout estricto para ganarle a los 3 segundos de Discord
-        tracks = await asyncio.wait_for(
-            wavelink.Playable.search(current, source=wavelink.TrackSource.YouTube),
-            timeout=1.5
-        )
-        
-        if not tracks:
-            return [discord.app_commands.Choice(name=f"🔍 Buscar directamente: {current[:80]}", value=current)]
-        
-        # Devolvemos las primeras 5 opciones reales encontradas
-        return [
-            discord.app_commands.Choice(name=f"🎵 {track.title[:80]}", value=track.uri)
-            for track in tracks[:5]
-        ]
-    except Exception:
-        # Si se agota el tiempo o falla la API, dejamos la opción de buscar el texto plano como fallback
-        return [discord.app_commands.Choice(name=f"🔍 Buscar: {current[:80]}", value=current)]
+    # Fallback: Si el servidor de música no responde, dejamos que el usuario escriba igual
+    # Esto quita el cartel de "Conectando..." y te habilita a tocar el "+1 más" (source) al toque
+    return [discord.app_commands.Choice(name=f"🔍 Buscar: {current[:80]}", value=current)]
     
 
 @bot.tree.command(name="stop", description="Detiene la música y desconecta al bot ⏹️")
