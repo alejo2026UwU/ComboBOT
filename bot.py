@@ -478,8 +478,17 @@ async def reproducir_tema(interaction: discord.Interaction, busqueda: str, sourc
 # ==============================================================================
 # 🎮 COMANDOS DE BARRA (MÚSICA, JUEGOS Y SOPORTE)
 # ==============================================================================
-@bot.tree.command(name="play", description="Reproduce una canción")
-async def play(interaction: discord.Interaction, buscar: str):
+@bot.tree.command(name="play", description="Reproduce una canción desde la plataforma elegida 🛸")
+@discord.app_commands.describe(
+    buscar="Nombre o URL de la canción a reproducir",
+    source="Plataforma de donde obtener el audio"
+)
+@discord.app_commands.choices(source=[
+    discord.app_commands.Choice(name="Spotify 🟢", value="spotify"),
+    discord.app_commands.Choice(name="SoundCloud 🟠", value="soundcloud"),
+    discord.app_commands.Choice(name="YouTube Music 🔴", value="youtube")
+])
+async def play(interaction: discord.Interaction, buscar: str, source: str = "youtube"):
     # 🌟 Avisamos a Discord que se aguante porque estamos procesando la música
     await interaction.response.defer(thinking=True)
     
