@@ -235,13 +235,13 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     
-    uri = "ssl://lavalink.swg.gg:443"
+    # 🌟 Cambiamos a este nodo público que tiene mejor soporte para la v3
+    uri = "ssl://lavalink.is-a.dev:443"
     password = "youshallnotpass"
     
     try:
         print(f"🔄 Intentando conectar al nodo: {uri}...", flush=True)
         
-        # 🌟 Quitamos el parámetro del timeout para que use el de defecto y no falle jamás
         node = wavelink.Node(
             uri=uri, 
             password=password
@@ -253,7 +253,6 @@ async def conectar_node():
     except Exception as e:
         print(f"⚠️ No se pudo conectar a {uri}: {e}", flush=True)
         try:
-            # 🌟 Agregamos el 'await' que faltaba para solucionar el Warning de Render
             await wavelink.Pool.close()
         except:
             pass
