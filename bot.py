@@ -234,8 +234,11 @@ class HelpGamesView(discord.ui.View):
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
     nodos_config = [
-    {"uri": "http://127.0.0.1:2333", "password": "youshallnotpass"}
-]
+        {
+            "uri": "http://lavalink.lavalink.top:80", 
+            "password": "youshallnotpass"
+        }
+    ]
     
     for config in nodos_config:
         # El resto de tu código del bucle va acá abajo...
