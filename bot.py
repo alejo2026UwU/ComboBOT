@@ -234,15 +234,14 @@ class HelpGamesView(discord.ui.View):
 # ==============================================================================
 async def conectar_node():
     """Conecta a Lavalink con reintentos y compatibilidad v4 forzada 🛡️🎵"""
-    nodos_config = [
-        {
-            "uri": "ssl://lavalink.swg.gg:443", 
-            "password": "youshallnotpass"
-        }
-    ]
     
-    for config in nodos_config:
-        # El resto de tu código del bucle va acá abajo...
+    node = wavelink.Node(
+        uri="ssl://lavalink.swg.gg:443",
+        password="youshallnotpass",
+        inactive_timeout=300
+    )
+    
+    await wavelink.Pool.connect(nodes=[node])
         try:
             print(f"🔄 Intentando conectar al nodo: {config['uri']}...", flush=True)
             
