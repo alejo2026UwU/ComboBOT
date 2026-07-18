@@ -522,8 +522,7 @@ async def play_autocomplete(interaction: discord.Interaction, current: str):
         # Si no hay nodo o da timeout, pasamos de largo sin trabar la interfaz
         pass
 
-    # Fallback: Si el servidor de música no responde, dejamos que el usuario escriba igual
-    # Esto quita el cartel de "Conectando..." y te habilita a tocar el "+1 más" (source) al toque
+    # Fallback: Te deja escribir y habilita el "+1 más" (source) al instante sin carteles molestos
     return [discord.app_commands.Choice(name=f"🔍 Buscar: {current[:80]}", value=current)]
     
 
