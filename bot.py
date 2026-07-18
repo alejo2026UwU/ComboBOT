@@ -233,19 +233,19 @@ class HelpGamesView(discord.ui.View):
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
 async def conectar_node():
-    """Conecta a Lavalink usando IP directa para evitar fallos de DNS 🛡️🎵"""
+    """Conecta a Lavalink usando un nodo SSL nativo para evitar el error de puerto 🛡️🎵"""
     
     try:
-        print("🔄 Intentando conectar al nodo público por IP...", flush=True)
+        print("🔄 Intentando conectar al nodo SSL público...", flush=True)
         
-        # 🌟 Usamos IP directa en vez de texto para saltar el error de Render
+        # Le damos una URL con ssl:// en el puerto 443 para que no falle el protocolo
         node = wavelink.Node(
-            uri="http://130.61.166.195:80", 
+            uri="ssl://lavalink.is-a.dev:443", 
             password="youshallnotpass"
         )
         
         await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Lavalink] ¡Conectado exitosamente! 🎸", flush=True)
+        print("🎵 [Lavalink] ¡Conectado exitosamente! El buscador está activo. 🎸", flush=True)
         return
         
     except Exception as e:
