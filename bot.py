@@ -398,19 +398,24 @@ class ReproductorView(discord.ui.View):
 # ==============================================================================
 # 🎮 MOTOR DE REPRODUCCIÓN (ESTILO VISUAL UZOX CON BORDE AZUL)
 # ==============================================================================
-async def reproducir_tema(interaction: discord.Interaction, busqueda: str, source):
-    """Función interna para buscar de inmediato, conectar y reproducir con estilo Uzox en azul 🛠️🎶"""
-    if not interaction.user.voice:
-        return await interaction.followup.send("❌ ¡Tenés que estar en un canal de voz! 🎤")
+async def play(interaction: discord.Interaction, buscar: str, source: str = "youtube"):
+    await interaction.response.defer(thinking=True)
     
-    player: wavelink.Player = interaction.guild.voice_client
-
-    if not player:
-        try:
-            player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
-        except Exception as e:
-            return await interaction.followup.send(f"❌ Error al conectar al canal: {e}")
-
+    try:
+        # Convertimos el string elegido en el menú al enum correcto de Wavelink
+        enums_source = {
+            "youtube": wavelink.TrackSource.YouTube,
+            "spotify": wavelink.TrackSource.Spotify,
+            "soundcloud": wavelink.TrackSource.SoundCloud
+        }
+        plataforma = enums_source.get(source, wavelink.TrackSource.YouTube)
+        
+        # 🌟 Llamamos a tu motor de reproducción real que estaba flotando abandonado
+        await reproducir_tema(interaction, buscar, plataforma)
+        
+    except Exception as e:
+        await interaction.followup.send(f"❌ Ocurrió un error: {e}")
+        
     query = busqueda
     if not (busqueda.startswith("http://") or busqueda.startswith("https://")):
         if source == wavelink.TrackSource.YouTube:
@@ -493,12 +498,18 @@ async def play(interaction: discord.Interaction, buscar: str, source: str = "you
     await interaction.response.defer(thinking=True)
     
     try:
-        # Aquí va tu lógica para conectar al canal de voz y reproducir la pista
-        # Nota: Como usamos defer(), para responder al usuario al final del comando
-        # debés usar: await interaction.followup.send(f"🎶 Reproduciendo: {buscar}")
-        pass
+        # Convertimos el string del menú de opciones al objeto TrackSource de Wavelink
+        enums_source = {
+            "youtube": wavelink.TrackSource.YouTube,
+            "spotify": wavelink.TrackSource.Spotify,
+            "soundcloud": wavelink.TrackSource.SoundCloud
+        }
+        plataforma = enums_source.get(source, wavelink.TrackSource.YouTube)
+        
+        # Conectamos y reproducimos usando tu motor visual
+        await reproducir_tema(interaction, buscar, plataforma)
     except Exception as e:
-        await interaction.followup.send(f"❌ Ocurrió un error: {e}")
+        await interaction.followup.send(f"❌ Ocurrió un error en el comando: {e}")
 
 @play.autocomplete("buscar")
 async def play_autocomplete(interaction: discord.Interaction, current: str):
