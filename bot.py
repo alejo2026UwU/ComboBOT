@@ -678,10 +678,31 @@ except Exception as error:
     print(f"❌ Falló el enlace de Flask: {error}", flush=True)
 
 # ==============================================================================
-# 7. EXECUTE DEL PROCESO PRINCIPAL
+# 7. EXECUTE DEL PROCESO PRINCIPAL CON REINTENTOS ANTIBLOQUEO 🛡️🚀
 # ==============================================================================
 token_servicio = os.environ.get("TOKEN")
-if token_servicio:
-    bot.run(token_servicio)
-else:
+
+if not token_servicio:
     print("❌ ERROR DE SISTEMA: Variable 'TOKEN' ausente en Render.", flush=True)
+else:
+    async def arrancar_bot_seguro():
+        while True:
+            try:
+                print("🌌 Iniciando conexión con los servidores de Discord...", flush=True)
+                await bot.start(token_servicio)
+            except discord.errors.HTTPException as e:
+                if e.status == 429:
+                    print("⚠️ IP Bloqueada por Discord (Error 429). Esperando 60 segundos para reintentar...", flush=True)
+                    await asyncio.sleep(60)
+                else:
+                    print(f"❌ Error HTTP inesperado: {e}. Reintentando en 15s...", flush=True)
+                    await asyncio.sleep(15)
+            except Exception as e:
+                print(f"❌ Error crítico al arrancar: {e}. Reintentando en 15s...", flush=True)
+                await asyncio.sleep(15)
+
+    try:
+        # Reemplazamos el bot.run clásico por un arranque controlado
+        asyncio.run(arrancar_bot_seguro())
+    except KeyboardInterrupt:
+        print("🛑 Proceso detenido manualmente.", flush=True)
