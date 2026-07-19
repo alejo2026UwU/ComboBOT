@@ -233,32 +233,31 @@ class HelpGamesView(discord.ui.View):
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
 async def conectar_node():
-    """Conecta a Lavalink usando un nodo SSL nativo para evitar el error de puerto 🛡️🎵"""
-    
+    """Conecta a Lavalink de forma segura 🛡️🎵"""
     try:
         print("🔄 Intentando conectar al nodo SSL público...", flush=True)
         
-        # Le damos una URL con ssl:// en el puerto 443 para que no falle el protocolo
+        # Usamos HTTPS y habilitamos HTTP en la configuración del nodo
         node = wavelink.Node(
-            uri="ssl://lavalink.is-a.dev:443", 
-            password="youshallnotpass"
+            uri="https://lavalink.is-a.dev:443", 
+            password="youshallnotpass",
+            use_http=True
         )
         
         await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Lavalink] ¡Conectado exitosamente! El buscador está activo. 🎸", flush=True)
-        return
+        print("🎵 [Lavalink] ¡Conectado exitosamente! 🎸", flush=True)
+        return  # 🔥 Corta el flujo si todo salió bien
         
     except Exception as e:
-        print(f"⚠️ No se pudo conectar: {e}", flush=True)
+        print(f"⚠️ Error de conexión: {e}. Reintentando en 30s...", flush=True)
         try:
             await wavelink.Pool.close()
         except:
             pass
-        await asyncio.sleep(2)
-
-    print("❌ El nodo falló. Reintentando ciclo en 15 segundos...", flush=True)
-    await asyncio.sleep(15)
-    bot.loop.create_task(conectar_node())
+        
+        # Espera prudente antes de reintentar para no saturar la API ⏱️
+        await asyncio.sleep(30)
+        bot.loop.create_task(conectar_node())
     
 @bot.event
 async def on_wavelink_node_ready(payload: wavelink.NodeReadyEventPayload):
