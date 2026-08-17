@@ -233,7 +233,7 @@ class HelpGamesView(discord.ui.View):
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
 async def conectar_node():
-    """Conecta a Lavalink de forma segura 🛡️🎵"""
+    """Conecta a tu propio nodo Lavalink en Render 🛡️🎵"""
     try:
         print("🔄 Conectando a Lavalink...", flush=True)
         node = wavelink.Node(
@@ -241,18 +241,11 @@ async def conectar_node():
             password="youshallnotpass"
         )
         await wavelink.Pool.connect(nodes=[node], client=bot)
-        print("🎵 [Lavalink] ¡Conectado exitosamente! 🎸", flush=True)
+        print("🎵 [Lavalink] ¡Conectado exitosamente a tu nodo propio! 🎸", flush=True)
     except Exception as e:
         print(f"⚠️ Error conectando a Lavalink: {e}", flush=True)
-            try:
-                await wavelink.Pool.close()
-            except:
-                pass
 
-    print("⚠️ No se pudo conectar a ningún nodo. Reintentando en 45s...", flush=True)
-    await asyncio.sleep(45)
-    bot.loop.create_task(conectar_node())
-    
+
 @bot.event
 async def on_wavelink_node_ready(payload: wavelink.NodeReadyEventPayload):
     print(f"Node {payload.node.identifier} is ready! 🚀")
