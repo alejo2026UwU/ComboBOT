@@ -237,7 +237,7 @@ async def conectar_node():
     try:
         print("🔄 Conectando a MI propio Lavalink en Render...", flush=True)
         node = wavelink.Node(
-            uri="https://mi-lavalink.onrender.com:443", 
+            uri="https://mi-lavalink.onrender.com", # <-- Pegá tu enlace real acá
             password="youshallnotpass"
         )
         await wavelink.Pool.connect(nodes=[node], client=bot)
