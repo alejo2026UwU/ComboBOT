@@ -232,7 +232,7 @@ class HelpGamesView(discord.ui.View):
 # ==============================================================================
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
-asasync def conectar_node():
+async def conectar_node():
     """Conecta a Lavalink de forma segura 🛡️🎵"""
     try:
         print("🔄 Conectando a Lavalink...", flush=True)
