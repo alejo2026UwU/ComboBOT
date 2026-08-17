@@ -233,26 +233,17 @@ class HelpGamesView(discord.ui.View):
 # 4. EVENTOS Y CONEXIÓN SEGURA A LAVALINK
 # ==============================================================================
 async def conectar_node():
-    """Conecta a un nodo Lavalink público activo 🛡️🎵"""
-    # Lista de nodos públicos funcionales como respaldo
-    nodos_publicos = [
-    {"uri": "https://lavalink.vines.host:443", "password": "youshallnotpass"},
-    {"uri": "https://ll.serenetia.com:443", "password": "youshallnotpass"},
-    {"uri": "https://lava.link:443", "password": "youshallnotpass"}
-]
-
-    for nodo_info in nodos_publicos:
-        try:
-            print(f"🔄 Intentando conectar al nodo Lavalink ({nodo_info['uri']})...", flush=True)
-            node = wavelink.Node(
-                uri=nodo_info["uri"],
-                password=nodo_info["password"]
-            )
-            await wavelink.Pool.connect(nodes=[node], client=bot)
-            print("🎵 [Lavalink] ¡Conectado exitosamente! 🎸", flush=True)
-            return
-        except Exception as e:
-            print(f"⚠️ Error conectando a {nodo_info['uri']}: {e}. Probando siguiente nodo...", flush=True)
+    """Conecta a tu propio nodo Lavalink en Render 🛡️🎵"""
+    try:
+        print("🔄 Conectando a MI propio Lavalink en Render...", flush=True)
+        node = wavelink.Node(
+            uri="https://mi-lavalink.onrender.com:443", 
+            password="youshallnotpass"
+        )
+        await wavelink.Pool.connect(nodes=[node], client=bot)
+        print("🎵 [Lavalink] ¡Conectado exitosamente a tu nodo propio! 🎸", flush=True)
+    except Exception as e:
+        print(f"⚠️ Error conectando a tu nodo Lavalink: {e}", flush=True)
             try:
                 await wavelink.Pool.close()
             except:
